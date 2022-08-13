@@ -1,0 +1,6 @@
+<form method="POST">
+    {% csrf_token %}
+    {{ formlog|crispy }}
+    <input type="hidden" name="login" value="true" />
+    <button class="log-button first" type="submit">Login</button>
+</form>

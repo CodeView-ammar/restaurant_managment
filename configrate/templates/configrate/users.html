@@ -1,0 +1,155 @@
+{%  extends "base.html" %}
+
+{% load static %} 
+{% block title %}
+شاشة المستخدمين
+{% endblock title %}
+
+
+{% block content %}
+
+
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg">
+    جديد
+  </button>
+
+
+<table id="example" class="display datatable" style="width:100%">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>الاسم الاول</th>
+            <th>الاسم الثاني</th>
+            <th>المستخدم</th>
+          
+        </tr>
+    </thead>
+ 
+</table>
+
+<div class="modal fade" id="modal-lg" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">إضافة المستخدمين</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <form method="POST" id ="id_form" action="{%url 'users-register'%}">
+          {% csrf_token %}
+          {% if form.errors %}
+              <div class="alert alert-danger alert-dismissible" role="alert">
+                  <div id="form_errors">
+                      {% for key, value in form.errors.items %}
+                          <strong>{{ value }}</strong>
+                      {% endfor %}
+                  </div>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+          {% endif %}
+          <div class="form-row">
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label class="small mb-1">First Name</label>
+                      {{ form.first_name }}
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label class="small mb-1">Last Name</label>
+                      {{ form.last_name }}
+                  </div>
+              </div>
+          </div>
+          <div class="form-row">
+              <div class="col-md-6">
+              <div class="form-group">
+                <label class="small mb-1">Username</label>
+                  {{ form.username }}
+              </div>
+          </div>
+              <div class="col-md-6">
+              <div class="form-group">
+                <label class="small mb-1">Email</label>
+                  {{ form.email }}
+              </div>
+          </div>
+      </div>
+          <div class="form-row">
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label class="small mb-1">Password</label>
+                      {{ form.password1 }}
+                      {{ form.errors.password }}
+                  </div>
+              </div>
+              <div class="col-md-6">
+
+                  <div class="form-group">
+                      <label class="small mb-1">Confirm Password</label>
+                      {{ form.password2 }}
+                  </div>
+              </div>
+          </div>
+          <div class="form-group mt-4 mb-0">
+              <button type="submit" class="col-md-12 btn btn-dark">Sign Up</button><br><br>
+          </div>
+      </form>
+  
+        </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+let csrf = '{{ csrf_token }}';
+ $("#id_form").on("submit",function(e){
+  e.preventDefault();
+      if ($("#password2").val() != $("#password1").val()){
+      alert("يجب عليك التحقق من الباسورد")
+      $("#password2").val('') ; 
+      $("#password1").val('');
+      return false; 
+      }
+      $.ajax({
+        method: "post",
+        data: $(this).serialize(),
+        url:$(this).attr('action'),
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("X-CSRFToken", csrf);
+          },
+        success: function(data) {
+          
+          if(data.status=="1")
+          {
+            alert(data.message);
+            $('.datatable').DataTable().ajax.reload();
+            $('#modal-lg').modal('hide');
+           }
+            else{
+            alert(data.message);
+            }
+        }
+      })
+ 
+    }) 
+    $(document).ready(function () {
+    var oTable = $('.datatable').dataTable({
+        // ...
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{% url 'UserDataJson' %}"
+    });
+    // ...
+});
+
+</script>
+
+{% endblock scripts %}
