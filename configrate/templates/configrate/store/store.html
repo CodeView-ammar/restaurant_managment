@@ -1,0 +1,131 @@
+{%  extends "base.html" %}
+
+{% load static %} 
+{% block title %}
+شاشة المخازن
+{% endblock title %}
+
+
+{% block content %}
+
+
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg">
+    جديد
+  </button>
+
+
+<table id="example" class="display datatable" style="width:100%">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>الاشم المحلي</th>
+            <th>الاسم الاجنبي</th>
+            <th>تفعيل</th>
+          
+        </tr>
+    </thead>
+ 
+</table>
+
+<div class="modal fade" id="modal-lg" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">إضافة المخازن</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <form method="POST" id ="id_form" action="{%url 'store'%}">
+          {% csrf_token %}
+          {% if form.errors %}
+              <div class="alert alert-danger alert-dismissible" role="alert">
+                  <div id="form_errors">
+                      {% for key, value in form.errors.items %}
+                          <strong>{{ value }}</strong>
+                      {% endfor %}
+                  </div>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+          {% endif %}
+          <div class="form-row">
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label class="small mb-1">الاسم المحلي </label>
+                      
+                      
+                      
+                      {{ filed.name_lo }}
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label class="small mb-1">الاسم الاجنبي</label>
+                      {{ filed.name_fk }}
+                  </div>
+              </div>
+          </div>
+          <div class="form-row">
+              <div class="col-md-6">
+              <div class="form-group">
+                <label class="small mb-1">تفيل</label>
+                  {{ filed.is_stop }}
+              </div>
+          </div>
+             
+          <div class="form-group mt-4 mb-0">
+              <button type="submit" class="col-md-12 btn btn-dark">حفظ</button><br><br>
+          </div>
+      </form>
+  
+        </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+let csrf = '{{ csrf_token }}';
+ $("#id_form").on("submit",function(e){
+  e.preventDefault();
+      
+      $.ajax({
+        method: "post",
+        data: $(this).serialize(),
+        url:$(this).attr('action'),
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("X-CSRFToken", csrf);
+          },
+        success: function(data) {
+          
+          if(data.status=="1")
+          {
+            alert(data.message);
+            $('.datatable').DataTable().ajax.reload();
+            $('#modal-lg').modal('hide');
+           }
+            else{
+            alert(data.message);
+            }
+        }
+      })
+ 
+    }) 
+    $(document).ready(function () {
+    var oTable = $('.datatable').dataTable({
+        // ...
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{% url 'storeJson' %}"
+    });
+    // ...
+});
+
+</script>
+
+{% endblock scripts %}

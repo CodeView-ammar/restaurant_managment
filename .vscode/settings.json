@@ -1,0 +1,10 @@
+{
+ 
+    "html.format.preserveNewLines": false,
+    "editor.formatOnSave": false,
+    "python.pythonPath": "C:\\Users\\Power Plus\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe",
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": false,
+    "python.linting.enabled": false,
+    "python.linting.pylamaEnabled": true,
+}

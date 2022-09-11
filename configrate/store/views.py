@@ -2,73 +2,68 @@ from django.shortcuts import render
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.utils.html import escape
-from .forms import UserForm
 from django.views.generic.edit import CreateView
 from django.http import  JsonResponse, HttpResponse
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth import views as auth_views #new
 from django.views import View
-from .forms import RegisterForm
+
+from configrate.models import Store
+from .forms import storeForm
 
 
-class RegisterView(View):
-    form_class = RegisterForm
-    initial = {'key': 'value'}
-    template_name = 'configrate/users.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        # will redirect to the home page if a user tries to access the register page while logged in
-        # if request.user.is_authenticated:
-        #     return redirect(to')
-
-        # else process dispatch as it otherwise normally would
-        return super(RegisterView, self).dispatch(request, *args, **kwargs)
+class store_item(CreateView):
 
     def get(self, request, *args, **kwargs):
-        form = RegisterForm()
-        return render(request, self.template_name, {'form': form})
+        Uni=Store.objects.all()
+        fileduse=storeForm()
+        context={
+            "store":Uni,
+            "filed":fileduse
+        }
+    
+        return render(request, 'configrate/store/store.html',context)
+
 
     def post(self, request, *args, **kwargs):
-        form = RegisterForm(request.POST)
+        form = storeForm(request.POST)
+        store=''
         if form.is_valid():
-            form.save()
+            store=form.save()
 
-            username = form.cleaned_data.get('username')
+
+       
+
+        if store.id:
             context={
                     "status":1,
                     "message":"تم الحفظ"
                 }
         else:
             context={
-                "status":0,
-                "message":form.errors
-            }
-    
+                    "status":0,
+                    "message":"خطاء في الحفظ"
+                }
         return JsonResponse(context)
+        if form.is_valid():
+            book = form.save()
+            book.save()
+            return HttpResponseRedirect(reverse_lazy('books:detail', args=[book.id]))
+        return render(request, 'books/book-create.html', {'form': form})
 
 
-# def get_users(request):
-#     user=UserR.objects.all()
-#     fileduse=UserForm()
-#     context={
-#         "user":user,
-#         "filed":fileduse
-#     }
-    
-#     return render(request, 'configrate/users.html',context)
 
 
-class UserDataJson(BaseDatatableView):
+class storeJson(BaseDatatableView):
     # The model we're going to show
-    model = User
+    model = Store
 
     # define the columns that will be returned
     columns = [
     'id',
-    "first_name",
-    "last_name",
-    "username",
+    "name_lo",
+    "name_fk",
+    "is_stop",
     ]
 
     # define column names that will be used in sorting
@@ -77,9 +72,9 @@ class UserDataJson(BaseDatatableView):
     # value like ''
     order_columns = [
     'id',
-    "first_name",
-    "last_name",
-    "username",
+    "name_lo",
+    "name_fk",
+    "is_stop",
 
     ]
 
@@ -88,12 +83,17 @@ class UserDataJson(BaseDatatableView):
     max_display_length = 500
     count = 0
     def render_column(self, row, column):
+        if column=="is_stop":
+            if row.is_stop:
+                return "مفعل"
+            else:
+                return "موقف"
         if column == "id":
             self.count += 1
             return self.count
         else:
-            # We want to render user as a custom column
-            return super(UserDataJson, self).render_column(row, column)
+            # We want to render store as a custom column
+            return super(storeJson, self).render_column(row, column)
 
     def filter_queryset(self, qs):
         # use parameters passed in GET request to filter queryset

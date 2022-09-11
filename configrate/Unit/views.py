@@ -2,73 +2,68 @@ from django.shortcuts import render
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.utils.html import escape
-from .forms import UserForm
 from django.views.generic.edit import CreateView
 from django.http import  JsonResponse, HttpResponse
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth import views as auth_views #new
 from django.views import View
-from .forms import RegisterForm
+
+from configrate.models import Unit
+from .forms import UnitForm
 
 
-class RegisterView(View):
-    form_class = RegisterForm
-    initial = {'key': 'value'}
-    template_name = 'configrate/users.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        # will redirect to the home page if a user tries to access the register page while logged in
-        # if request.user.is_authenticated:
-        #     return redirect(to')
-
-        # else process dispatch as it otherwise normally would
-        return super(RegisterView, self).dispatch(request, *args, **kwargs)
+class unit_item(CreateView):
 
     def get(self, request, *args, **kwargs):
-        form = RegisterForm()
-        return render(request, self.template_name, {'form': form})
+        Uni=Unit.objects.all()
+        fileduse=UnitForm()
+        context={
+            "Unit":Uni,
+            "filed":fileduse
+        }
+    
+        return render(request, 'configrate/unit/unit_item.html',context)
+
 
     def post(self, request, *args, **kwargs):
-        form = RegisterForm(request.POST)
+        form = UnitForm(request.POST)
+        unit=''
         if form.is_valid():
-            form.save()
+            unit=form.save()
 
-            username = form.cleaned_data.get('username')
+
+       
+
+        if unit.id:
             context={
                     "status":1,
                     "message":"تم الحفظ"
                 }
         else:
             context={
-                "status":0,
-                "message":form.errors
-            }
-    
+                    "status":0,
+                    "message":"خطاء في الحفظ"
+                }
         return JsonResponse(context)
+        if form.is_valid():
+            book = form.save()
+            book.save()
+            return HttpResponseRedirect(reverse_lazy('books:detail', args=[book.id]))
+        return render(request, 'books/book-create.html', {'form': form})
 
 
-# def get_users(request):
-#     user=UserR.objects.all()
-#     fileduse=UserForm()
-#     context={
-#         "user":user,
-#         "filed":fileduse
-#     }
-    
-#     return render(request, 'configrate/users.html',context)
 
 
-class UserDataJson(BaseDatatableView):
+class UnitJson(BaseDatatableView):
     # The model we're going to show
-    model = User
+    model = Unit
 
     # define the columns that will be returned
     columns = [
     'id',
-    "first_name",
-    "last_name",
-    "username",
+    "name_lo",
+    "name_fk",
+    "codeUnit",
     ]
 
     # define column names that will be used in sorting
@@ -77,9 +72,9 @@ class UserDataJson(BaseDatatableView):
     # value like ''
     order_columns = [
     'id',
-    "first_name",
-    "last_name",
-    "username",
+    "name_lo",
+    "name_fk",
+    "codeUnit",
 
     ]
 
@@ -92,8 +87,8 @@ class UserDataJson(BaseDatatableView):
             self.count += 1
             return self.count
         else:
-            # We want to render user as a custom column
-            return super(UserDataJson, self).render_column(row, column)
+            # We want to render Unit as a custom column
+            return super(UnitJson, self).render_column(row, column)
 
     def filter_queryset(self, qs):
         # use parameters passed in GET request to filter queryset
