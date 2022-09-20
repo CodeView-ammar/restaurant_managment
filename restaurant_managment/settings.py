@@ -13,7 +13,7 @@ SECRET_KEY = '6*i+rdg=y!^=_z@#%qt&y08h5yobsxl-k_0m*9)h85gu6x*g2@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['savepassword.herokuapp.com','127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 INSTALLED_APPS = [

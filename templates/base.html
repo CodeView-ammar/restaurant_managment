@@ -12,15 +12,9 @@
               <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-              <a href="index3.html" class="nav-link">Home</a>
+              <a href="index3.html" class="nav-link">الرئيسي</a>
             </li>
-            <li class="nav-item d-none d-sm-inline-block">
-              {% if user.is_authenticated %}
-                <a class="btn btn-primary btn-lg" href="{% url 'logout' %}" role="button">Logout</a>
-            {% else %}
-                <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">Sign in</a>
-            {% endif %}
-            </li>
+            
           </ul>
       
           <!-- SEARCH FORM -->
@@ -127,6 +121,13 @@
                 <i class="fas fa-th-large"></i>
               </a>
             </li>
+            <li class="nav-item d-none d-sm-inline-block">
+              {% if user.is_authenticated %}
+                <a class="btn btn-primary btn-lg" href="{% url 'logout' %}" role="button">خروج</a>
+            {% else %}
+                <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">تسجيل دخول</a>
+            {% endif %}
+            </li>
           </ul>
         </nav>
         <!-- /.navbar -->
@@ -135,7 +136,7 @@
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
           <!-- Brand Logo -->
           <a href="{% url 'index' %}" class="brand-link">
-            <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+            <img src="/static/logomain.jpg" alt="إدارة المطاعم" class="brand-image img-circle elevation-3"
                  style="opacity: .8">
             <span class="brand-text font-weight-light">الرئيسي</span>
           </a>
@@ -159,7 +160,7 @@
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                   <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">الرئيسي</a></li>
                     <li class="breadcrumb-item active"></li>
                   </ol>
                 </div><!-- /.col -->
