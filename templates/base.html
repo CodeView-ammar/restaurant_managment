@@ -12,7 +12,7 @@
               <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
             </li>
             <li class="nav-item d-none d-sm-inline-block">
-              <a href="index3.html" class="nav-link">الرئيسي</a>
+              <a href="{% url 'index' %}" class="nav-link">الرئيسي</a>
             </li>
             
           </ul>
@@ -92,28 +92,23 @@
             <!-- Notifications Dropdown Menu -->
             <li class="nav-item dropdown">
               <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge">15</span>
+                <i class="far fa-envelope"></i>
+                <span class="badge badge-warning navbar-badge">إعدادات</span>
               </a>
               <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <span class="dropdown-item dropdown-header">15 Notifications</span>
+                <span class="dropdown-item dropdown-header">معلوماتي</span>
                 <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="fas fa-envelope mr-2"></i> 4 new messages
-                  <span class="float-right text-muted text-sm">3 mins</span>
+                <a href="{% url 'users-profile' %}" class="dropdown-item">
+                  <i class="fas fa-envelope mr-2"></i>حسابي
                 </a>
+
+                  {% if user.is_authenticated %}
+                    <a class="dropdown-item" style="background:red; color:white;font-size: large;" href="{% url 'logout' %}" role="button">خروج</a>
+                {% else %}
+                    <a class="dropdown-item" href="{% url 'login' %}" role="button">تسجيل دخول</a>
+                {% endif %}
+    
                 <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="fas fa-users mr-2"></i> 8 friend requests
-                  <span class="float-right text-muted text-sm">12 hours</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item">
-                  <i class="fas fa-file mr-2"></i> 3 new reports
-                  <span class="float-right text-muted text-sm">2 days</span>
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
               </div>
             </li>
             <li class="nav-item">
@@ -121,13 +116,7 @@
                 <i class="fas fa-th-large"></i>
               </a>
             </li>
-            <li class="nav-item d-none d-sm-inline-block">
-              {% if user.is_authenticated %}
-                <a class="btn btn-primary btn-lg" href="{% url 'logout' %}" role="button">خروج</a>
-            {% else %}
-                <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">تسجيل دخول</a>
-            {% endif %}
-            </li>
+            
           </ul>
         </nav>
         <!-- /.navbar -->
@@ -160,7 +149,7 @@
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                   <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="#">الرئيسي</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'index' %}">الرئيسي</a></li>
                     <li class="breadcrumb-item active"></li>
                   </ol>
                 </div><!-- /.col -->

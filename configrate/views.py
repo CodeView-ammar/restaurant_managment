@@ -10,8 +10,11 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import views as auth_views #new
 from django.views import View
 from .forms import RegisterForm
+from django.urls import reverse
+from django.core import serializers
 
-
+from django.shortcuts import get_object_or_404
+from django.http import QueryDict
 class RegisterView(View):
     form_class = RegisterForm
     initial = {'key': 'value'}
@@ -26,11 +29,26 @@ class RegisterView(View):
         return super(RegisterView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        form = RegisterForm()
-        return render(request, self.template_name, {'form': form})
+        
+        if 'id' in request.GET.keys():
+            if request.GET.get('id'):
+                data=User.objects.filter(pk=request.GET.get('id'))
+                
+                
+
+                result={'status':1,'data':serializers.serialize('json',data)}
+            else:
+                result={'status':0,'data':''}
+            return JsonResponse(result)
+        else:
+            form = RegisterForm()
+            return render(request, self.template_name, {'form': form})
 
     def post(self, request, *args, **kwargs):
         form = RegisterForm(request.POST)
+        if request.POST.get('id'):
+            data=get_object_or_404(User,pk=int(request.POST.get('id')))
+            form=RegisterForm(request.POST,instance=data)
         if form.is_valid():
             form.save()
 
@@ -47,6 +65,21 @@ class RegisterView(View):
     
         return JsonResponse(context)
 
+    def delete(self, request,*args, **kwargs):
+        pk=int(QueryDict(request.body).get('id'))
+        if pk:
+            try:
+                data=get_object_or_404(User,pk=pk)
+                data.delete()
+                msg="تم الحذف"
+                result={'status':1,'message':msg}
+            except:
+                msg="خطاء بالحذف"
+                result={'status':0,'message':msg}
+        else:
+            msg="لا يوجد الصنف"
+            result={'status':0,'message':msg}
+        return JsonResponse(result)
 
 # def get_users(request):
 #     user=UserR.objects.all()
@@ -69,6 +102,7 @@ class UserDataJson(BaseDatatableView):
     "first_name",
     "last_name",
     "username",
+     "action",
     ]
 
     # define column names that will be used in sorting
@@ -80,7 +114,7 @@ class UserDataJson(BaseDatatableView):
     "first_name",
     "last_name",
     "username",
-
+    "action",
     ]
 
     # set max limit of records returned, this is used to protect our site if someone tries to attack our site
@@ -91,6 +125,8 @@ class UserDataJson(BaseDatatableView):
         if column == "id":
             self.count += 1
             return self.count
+        if column ==  "action":
+             return '<a class="edit_row" data-url="{3}" data-id="{0}" style="DISPLAY: -webkit-inline-box;"  data-toggle="tooltip" title="{1}"><i class="fa fa-edit"></i></a><a class="delete_row" data-url="{3}" data-id="{0}"  style="    DISPLAY: -webkit-inline-box;"     data-toggle="tooltip" title="{2}"><i class="fa fa-trash"></i></a>'.format(row.pk,"تعديل","حذف",reverse("users-register"))
         else:
             # We want to render user as a custom column
             return super(UserDataJson, self).render_column(row, column)

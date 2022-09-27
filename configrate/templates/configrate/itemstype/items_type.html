@@ -21,7 +21,7 @@
             <th>#</th>
             <th>الاشم المحلي</th>
             <th>الاسم الاجنبي</th>
-          
+            <th>الاحداث</th>          
         </tr>
     </thead>
  
@@ -37,6 +37,7 @@
           </button>
         </div>
         <form method="POST" id ="id_form" action="{%url 'Itemstype'%}">
+          <input type="text" name="id" class="hidden" style="display: contents;">
           {% csrf_token %}
           {% if form.errors %}
               <div class="alert alert-danger alert-dismissible" role="alert">
@@ -109,7 +110,67 @@ let csrf = '{{ csrf_token }}';
       })
  
     }) 
-    $(document).ready(function () {
+   
+$(document).on('click','.edit_row',function(){
+ 
+ $.ajax({
+       url: $(this).data('url'),
+       data: {'id':$(this).data('id')},
+       type: 'GET',
+       success: function (data) {
+           let resp=JSON.parse(data.data);
+           if(data.status==1){
+               
+           $(`input[name="id"]`).val(resp[0].pk);
+           $.each(resp[0].fields,function(i,value){
+               $(`input[name="${i}"]`).val(value);
+               $(`select[name="${i}"] option[value="${value}"]`).attr('selected','selected');
+           });
+         $('#modal-lg').modal('show');
+
+       }
+      else{
+       console.log(data.error);
+      }
+  },
+  error:function(data){
+  }
+});
+});
+
+$(document).on('click','.delete_row',function(){
+
+if(confirm('هل حقا تريد الحذف؟')){
+ let id_row=$(this).data('id');
+ $.ajax({
+     url: $(this).data('url'),
+     data: {
+      'id':id_row,
+  },
+  method: 'DELETE',
+  beforeSend: function (xhr) {
+          xhr.setRequestHeader("X-CSRFToken",csrf);
+      },
+  success: function (data) {
+     
+      if(data.status==1){
+       alert(data.message)   
+    
+       $('.datatable').DataTable().ajax.reload();
+       
+     }
+     if(data.status==0)
+       alert(data.message)   
+
+   
+  },
+  error:function(data){
+  }
+});
+}
+});
+
+  $(document).ready(function () {
     var oTable = $('.datatable').dataTable({
         // ...
         "processing": true,

@@ -11,22 +11,42 @@ from django.views import View
 from configrate.models import Items_type
 from .forms import items_typeForm
 
+from django.urls import reverse
+from django.core import serializers
+from django.shortcuts import get_object_or_404
+from django.http import QueryDict
 
 class items_type_item(CreateView):
 
     def get(self, request, *args, **kwargs):
-        Uni=Items_type.objects.all()
-        fileduse=items_typeForm()
-        context={
-            "items_type":Uni,
-            "filed":fileduse
-        }
-    
+        if 'id' in request.GET.keys():
+            if request.GET.get('id'):
+                data=Items_type.objects.filter(pk=request.GET.get('id'))
+                
+                
+
+                result={'status':1,'data':serializers.serialize('json',data)}
+            else:
+                result={'status':0,'data':''}
+            return JsonResponse(result)
+        else:
+        
+            Uni=Items_type.objects.all()
+            fileduse=items_typeForm()
+            context={
+                "items_type":Uni,
+                "filed":fileduse
+            }
+        
         return render(request, 'configrate/itemstype/items_type.html',context)
 
 
     def post(self, request, *args, **kwargs):
         form = items_typeForm(request.POST)
+        if request.POST.get('id'):
+            data=get_object_or_404(Items_type,pk=int(request.POST.get('id')))
+            form=items_typeForm(request.POST,instance=data)
+        
         items_type=''
         if form.is_valid():
             items_type=form.save()
@@ -51,7 +71,21 @@ class items_type_item(CreateView):
             return HttpResponseRedirect(reverse_lazy('books:detail', args=[book.id]))
         return render(request, 'books/book-create.html', {'form': form})
 
-
+    def delete(self, request,*args, **kwargs):
+        pk=int(QueryDict(request.body).get('id'))
+        if pk:
+            try:
+                data=get_object_or_404(Items_type,pk=pk)
+                data.delete()
+                msg="تم الحذف"
+                result={'status':1,'message':msg}
+            except:
+                msg="خطاء بالحذف"
+                result={'status':0,'message':msg}
+        else:
+            msg="لا يوجد الصنف"
+            result={'status':0,'message':msg}
+        return JsonResponse(result)
 
 
 class items_typeJson(BaseDatatableView):
@@ -63,6 +97,7 @@ class items_typeJson(BaseDatatableView):
     'id',
     "name_lo",
     "name_fk",
+    "action",
     ]
 
     # define column names that will be used in sorting
@@ -73,7 +108,7 @@ class items_typeJson(BaseDatatableView):
     'id',
     "name_lo",
     "name_fk",
-    
+    "action",
     ]
 
     # set max limit of records returned, this is used to protect our site if someone tries to attack our site
@@ -84,6 +119,10 @@ class items_typeJson(BaseDatatableView):
         if column == "id":
             self.count += 1
             return self.count
+        if column ==  "action":
+            return '<a class="edit_row" data-url="{3}" data-id="{0}" style="DISPLAY: -webkit-inline-box;"  data-toggle="tooltip" title="{1}"><i class="fa fa-edit"></i></a><a class="delete_row" data-url="{3}" data-id="{0}"  style="    DISPLAY: -webkit-inline-box;"     data-toggle="tooltip" title="{2}"><i class="fa fa-trash"></i></a>'.format(row.pk,"Edit","Delete",reverse("Itemstype"))
+            
+            
         else:
             # We want to render items_type as a custom column
             return super(items_typeJson, self).render_column(row, column)

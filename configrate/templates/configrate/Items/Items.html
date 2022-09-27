@@ -151,9 +151,10 @@ let csrf = '{{ csrf_token }}';
       })
  
     }) 
-    $(document).on('click','.edit_row',function(){
+    
+$(document).on('click','.edit_row',function(){
  
-      $.ajax({
+    $.ajax({
           url: $(this).data('url'),
           data: {'id':$(this).data('id')},
           type: 'GET',
@@ -166,10 +167,10 @@ let csrf = '{{ csrf_token }}';
                   $(`input[name="${i}"]`).val(value);
                   $(`select[name="${i}"] option[value="${value}"]`).attr('selected','selected');
               });
-             $('#modal-lg').modal('show');
+            $('#modal-lg').modal('show');
 
-
-         }else{
+          }
+         else{
           console.log(data.error);
          }
      },
@@ -181,10 +182,10 @@ let csrf = '{{ csrf_token }}';
 $(document).on('click','.delete_row',function(){
 
  if(confirm('هل حقا تريد الحذف؟')){
- let id_row=$(this).data('id');
- $.ajax({
-     url: $(this).data('url'),
-     data: {
+    let id_row=$(this).data('id');
+    $.ajax({
+        url: $(this).data('url'),
+        data: {
          'id':id_row,
      },
      method: 'DELETE',
@@ -210,7 +211,7 @@ $(document).on('click','.delete_row',function(){
 }
 });
 
-    $(document).ready(function () {
+$(document).ready(function () {
     var oTable = $('.datatable').dataTable({
         // ...
         "processing": true,

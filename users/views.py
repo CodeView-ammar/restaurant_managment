@@ -45,7 +45,7 @@ class RegisterView(View):
             return redirect(to='login')
 
         return render(request, self.template_name, {'form': form})
-
+    
 
 # Class based view that extends from the built in login view to add a remember me functionality
 class CustomLoginView(LoginView):

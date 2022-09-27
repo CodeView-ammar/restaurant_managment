@@ -22,6 +22,7 @@
             <th>الاسم الاول</th>
             <th>الاسم الثاني</th>
             <th>المستخدم</th>
+            <th>ادوات</th>
           
         </tr>
     </thead>
@@ -38,7 +39,9 @@
           </button>
         </div>
         <form method="POST" id ="id_form" action="{%url 'users-register'%}">
-          {% csrf_token %}
+            <input type="text" name="id" class="hidden" style="display: contents;">
+              
+            {% csrf_token %}
           {% if form.errors %}
               <div class="alert alert-danger alert-dismissible" role="alert">
                   <div id="form_errors">
@@ -54,13 +57,13 @@
           <div class="form-row">
               <div class="col-md-6">
                   <div class="form-group">
-                      <label class="small mb-1">First Name</label>
+                      <label class="small mb-1">الاسم الاول</label>
                       {{ form.first_name }}
                   </div>
               </div>
               <div class="col-md-6">
                   <div class="form-group">
-                      <label class="small mb-1">Last Name</label>
+                      <label class="small mb-1">الاسم الاخير</label>
                       {{ form.last_name }}
                   </div>
               </div>
@@ -68,13 +71,13 @@
           <div class="form-row">
               <div class="col-md-6">
               <div class="form-group">
-                <label class="small mb-1">Username</label>
+                <label class="small mb-1">اسم المستخدم</label>
                   {{ form.username }}
               </div>
           </div>
               <div class="col-md-6">
               <div class="form-group">
-                <label class="small mb-1">Email</label>
+                <label class="small mb-1">الايميل</label>
                   {{ form.email }}
               </div>
           </div>
@@ -82,7 +85,7 @@
           <div class="form-row">
               <div class="col-md-6">
                   <div class="form-group">
-                      <label class="small mb-1">Password</label>
+                      <label class="small mb-1">كلمة المرور</label>
                       {{ form.password1 }}
                       {{ form.errors.password }}
                   </div>
@@ -90,13 +93,13 @@
               <div class="col-md-6">
 
                   <div class="form-group">
-                      <label class="small mb-1">Confirm Password</label>
+                      <label class="small mb-1">إعادة كتابة كلمة المرور</label>
                       {{ form.password2 }}
                   </div>
               </div>
           </div>
-          <div class="form-group mt-4 mb-0">
-              <button type="submit" class="col-md-12 btn btn-dark">Sign Up</button><br><br>
+          <div class="form-group mt-1 mb-0">
+              <button type="submit" class="m-1 col-md-11 btn btn-primary">حفظ</button><br><br>
           </div>
       </form>
   
@@ -134,13 +137,75 @@ let csrf = '{{ csrf_token }}';
             $('#modal-lg').modal('hide');
            }
             else{
-            alert(data.message);
+            console.log(data.message["password2"]);
             }
         }
       })
  
     }) 
-    $(document).ready(function () {
+   
+$(document).on('click','.edit_row',function(){
+ 
+     $.ajax({
+       url: $(this).data('url'),
+       data: {'id':$(this).data('id')},
+       type: 'GET',
+       success: function (data) {
+           let resp=JSON.parse(data.data);
+           if(data.status==1){
+               
+           $(`input[name="id"]`).val(resp[0].pk);
+           $.each(resp[0].fields,function(i,value){
+               $(`input[name="${i}"]`).val(value);
+               $(`select[name="${i}"] option[value="${value}"]`).attr('selected','selected');
+           });
+         $('#modal-lg').modal('show');
+
+       }
+      else{
+       console.log(data.error);
+      }
+  },
+  error:function(data){
+  }
+});
+});
+
+$(document).on('click','.delete_row',function(){
+
+if(confirm('هل حقا تريد الحذف؟')){
+ let id_row=$(this).data('id');
+ $.ajax({
+     url: $(this).data('url'),
+     data: {
+      'id':id_row,
+  },
+  method: 'DELETE',
+  beforeSend: function (xhr) {
+          xhr.setRequestHeader("X-CSRFToken",csrf);
+      },
+  success: function (data) {
+     
+      if(data.status==1){
+       alert(data.message)   
+    
+       $('.datatable').DataTable().ajax.reload();
+       
+     }
+     if(data.status==0)
+       alert(data.message)   
+
+   
+  },
+  error:function(data){
+  }
+});
+}
+});
+
+
+
+$(document).ready(function () {
     var oTable = $('.datatable').dataTable({
         // ...
         "processing": true,

@@ -10,23 +10,43 @@ from django.views import View
 
 from configrate.models import Unit
 from .forms import UnitForm
+from django.urls import reverse
+from django.core import serializers
+from django.shortcuts import get_object_or_404
+from django.http import QueryDict
 
 
 class unit_item(CreateView):
 
     def get(self, request, *args, **kwargs):
-        Uni=Unit.objects.all()
-        fileduse=UnitForm()
-        context={
-            "Unit":Uni,
-            "filed":fileduse
-        }
+        if 'id' in request.GET.keys():
+            if request.GET.get('id'):
+                data=Unit.objects.filter(pk=request.GET.get('id'))
+                
+                
+
+                result={'status':1,'data':serializers.serialize('json',data)}
+            else:
+                result={'status':0,'data':''}
+            return JsonResponse(result)
+        else:
+        
+            Uni=Unit.objects.all()
+            fileduse=UnitForm()
+            context={
+                "Unit":Uni,
+                "filed":fileduse
+            }
     
         return render(request, 'configrate/unit/unit_item.html',context)
 
 
     def post(self, request, *args, **kwargs):
-        form = UnitForm(request.POST)
+        form = UnitForm(request.POST) 
+        if request.POST.get('id'):
+            data=get_object_or_404(Unit,pk=int(request.POST.get('id')))
+            form=UnitForm(request.POST,instance=data)
+        
         unit=''
         if form.is_valid():
             unit=form.save()
@@ -51,6 +71,22 @@ class unit_item(CreateView):
             return HttpResponseRedirect(reverse_lazy('books:detail', args=[book.id]))
         return render(request, 'books/book-create.html', {'form': form})
 
+    def delete(self, request,*args, **kwargs):
+        pk=int(QueryDict(request.body).get('id'))
+        if pk:
+            try:
+                data=get_object_or_404(Unit,pk=pk)
+                data.delete()
+                msg="تم الحذف"
+                result={'status':1,'message':msg}
+            except:
+                msg="خطاء بالحذف"
+                result={'status':0,'message':msg}
+        else:
+            msg="لا يوجد الصنف"
+            result={'status':0,'message':msg}
+        return JsonResponse(result)
+
 
 
 
@@ -64,6 +100,8 @@ class UnitJson(BaseDatatableView):
     "name_lo",
     "name_fk",
     "codeUnit",
+    "action",
+
     ]
 
     # define column names that will be used in sorting
@@ -75,6 +113,7 @@ class UnitJson(BaseDatatableView):
     "name_lo",
     "name_fk",
     "codeUnit",
+        "action",
 
     ]
 
@@ -86,6 +125,9 @@ class UnitJson(BaseDatatableView):
         if column == "id":
             self.count += 1
             return self.count
+        if column == "action":
+            return '<a class="edit_row" data-url="{3}" data-id="{0}" style="DISPLAY: -webkit-inline-box;"  data-toggle="tooltip" title="{1}"><i class="fa fa-edit"></i></a><a class="delete_row" data-url="{3}" data-id="{0}"  style="    DISPLAY: -webkit-inline-box;"     data-toggle="tooltip" title="{2}"><i class="fa fa-trash"></i></a>'.format(row.pk,"Edit","Delete",reverse("unit"))
+       
         else:
             # We want to render Unit as a custom column
             return super(UnitJson, self).render_column(row, column)
