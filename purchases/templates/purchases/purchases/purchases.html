@@ -1,0 +1,373 @@
+{%  extends "base.html" %}
+
+{% load static %} 
+{% block title %}
+{{title_list}}
+{% endblock title %}
+
+{% block content %}
+    <form method="post" id='myform_' action="{{ url }}" class="needs-validation" accept-charset="utf-8">
+        {% csrf_token %}
+        <input type="text" id="id_invoice1" name="id_invoice" class="hidden">
+        
+     <div class="row">
+      <div class="col-md-4 mt-4">
+        {{form.number.label}}
+        {{form.number}}
+
+          
+      </div>
+      <div class="col-md-4 mt-4">
+        
+        {{form.store.label}}
+      {{form.store}}
+    </div>
+    <div class="col-md-4 mt-4">
+        {{form.date.label}}
+      {{form.date}}
+    </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 mt-4">
+
+          {{form.supplir.label}}
+        {{form.supplir}}
+      </div>
+      <div class="col-md-4 mt-4">
+        {{form.notes.label}}
+        {{form.notes}}
+      </div>
+      <div class="col-md-4 mt-4">
+    
+      </div>
+    </div>
+
+    {% load i18n static %} 
+    {% csrf_token %}
+    
+    
+    
+    <div class="table-responsive mailbox-messages">
+        <table class="table table-responsive  table-bordered table-hover" id="show_opration_id">
+            <thead class="text-center">
+                <tr>
+                    <th>{% trans "#" %}</th>
+                    <th style="width: 200px;">{% trans "الاصناف" %}</th>
+                    <th>{% trans "السعر" %}</th>
+                    <th style="width: 200px;">{% trans "الكمية" %}</th>
+                    <th style="width: 200px;">{% trans "الإجمالي" %}</th>
+                    <th style="width: 100px;">{% trans "تاريخ الإنتهاء" %}</th>
+                    
+                    <th>{% trans "Action" %}</th>
+                </tr>
+    
+            </thead>
+            <tbody class="tbody_tb text-center">
+                {{ formset.management_form }}
+                {% for f_set in formset %}
+                <tr class="item">
+                    <td class="td_id">{{ forloop.counter }}</td>
+                    <td class="td_two">{{ f_set.items }}</td>
+                    <td class="td_first">{{ f_set.price }}</td>
+                    <td>{{ f_set.qty }}</td>
+                    <td class="td_total">{{ f_set.total }}</td>
+                    <td>{{ f_set.date_end }}</td>
+                              <td>
+                        <button 
+                            type="button" 
+                            data-toggle="tooltip" 
+                            title="Delete" 
+                            class="btn btn-dark btn-sm delete_form" 
+                            id="{{ f_set.prefix }}">
+                            
+                                <i 
+                                    class="fa fa-trash fa-lg" 
+                                    aria-hidden="true"
+                                    data-original-title="" 
+                                    title="">
+                                </i>
+                        </button>
+                    </td>
+                    <td class="hidden">{{f_set.id}}</td>
+                </tr>
+                {% endfor %}
+    
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        <button type="button" data-toggle="tooltip" title="Add Row" class="btn btn-sm btn-green add_form" id="{{ formset.prefix }}">
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                    
+                    <td colspan="2" style="border-left: none!important; border-right: none !important; border-bottom: none!important;">
+                        {{form.amount.label}}
+                        {{form.amount}}
+                    </td>
+    
+    
+                </tr>
+    
+            </tfoot>
+    
+        </table>
+    </div>
+
+    <button type="submit">حفظ</button>
+    </form>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+  max_number =()=>{
+    $.ajax({
+        method: "post",
+        url:"{%url 'max_number'%}",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("X-CSRFToken", csrf);
+          },
+        success: function(data) {
+          $("#id_number").val(data.max_number);
+        }
+      });
+  };
+</script>
+<script>
+  let csrf = '{{ csrf_token }}';
+
+  max_number();
+  
+
+    
+$(document).on('submit', '#myform_', function(e) {
+        
+        let form_id = '#myform_';
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            method: 'POST',
+            success: function(data) {
+                if (data.status == 1) {
+                    alert(data.message);
+
+                    table.ajax.reload();
+                } else if (data.status == 2) {
+                    $.each(data.error, function() {
+                        let form = $(this)[0].form_id;
+                        alert($(this)[0].message);
+                    });
+                } else if (data.status == 0) {
+                    alert(data.message);
+                    
+
+                    let invoice_rows = parseInt($('#id_' + 'PurchasesDetails' + '-TOTAL_FORMS').val());
+
+                    if (!data.error == "") {
+                        alert(data.error);
+                        let row_id = data.error.form_id;
+                        let row_id2 = data.error['myform_'];
+                        let error = JSON.parse(data.error.error);
+                        $.each(error, function(i, value) {
+                            let div = '<span class="text-danger">';
+                            $.each(value, function(j, message) {
+                                div += `- ${message.message}<br>`;
+                            });
+
+                            $(`#id_${row_id}-0-${i}`).parent().append(div);
+                        });
+                    }
+                    if (!data.error2 == "") {
+
+
+
+                        let error2 = JSON.parse(data.error2);
+
+                    
+                        $.each(error2, function(i, value) {
+                            
+                            let div = '<span class="text-danger">';
+                            $.each(value, function(j, message) {
+                                div += `- ${message.message}<br>`;
+                                alert(String(message.message));
+                            });
+                            $(`#PurchasesDetails-${data.row}-${i}`).parent().append(div);
+                        });
+                    }
+                
+            } else if (data.status == 3) {
+                alert(data.message)
+            }
+                $('#submit-button').button('reset');
+            },
+            error: function(data) {
+                
+
+                alert('خطاء');
+            }
+        });
+    
+    });
+
+
+
+
+$(document).on('click','.edit_row',function(){
+ 
+    $.ajax({
+          url: $(this).data('url'),
+          data: {'id':$(this).data('id')},
+          type: 'GET',
+          success: function (data) {
+              let resp=JSON.parse(data.data);
+              if(data.status==1){
+                  
+              $(`input[name="id"]`).val(resp[0].pk);
+              $.each(resp[0].fields,function(i,value){
+                  $(`input[name="${i}"]`).val(value);
+                  $(`select[name="${i}"] option[value="${value}"]`).attr('selected','selected');
+              });
+            $('#modal-lg').modal('show');
+
+          }
+         else{
+          console.log(data.error);
+         }
+     },
+     error:function(data){
+     }
+ });
+});
+
+$(document).on('click','.delete_row',function(){
+
+ if(confirm('هل حقا تريد الحذف؟')){
+    let id_row=$(this).data('id');
+    $.ajax({
+        url: $(this).data('url'),
+        data: {
+         'id':id_row,
+     },
+     method: 'DELETE',
+     beforeSend: function (xhr) {
+             xhr.setRequestHeader("X-CSRFToken",csrf);
+         },
+     success: function (data) {
+        
+         if(data.status==1){
+          alert(data.message)   
+       
+          $('.datatable').DataTable().ajax.reload();
+          
+        }
+        if(data.status==0)
+          alert(data.message)   
+
+      
+     },
+     error:function(data){
+     }
+ });
+}
+});
+
+$(document).ready(function () {
+    var oTable = $('.datatable').dataTable({
+        // ...
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{% url 'SupplierJson' %}"
+    });
+    // ...
+});
+
+
+
+$(document).on('click', '.add_form', function() {
+    let prefix = String($(this).attr('id'));
+    var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    var row = $(".item:last").clone(false).get(0);
+    
+    $(row).find('.td_two').attr('data-select2-id', formCount);
+    $(row).find('.td_id').text(formCount + 1);
+    $(row).find('.formset-field').each(function() {
+        updateElementFormset(this, prefix, formCount);
+        $(this).val('');
+        $(this).removeAttr('value');
+        $(this).removeAttr('disabled');
+        $(this).removeAttr('readonly');
+    });
+    $(row).find('.td_total').children('input').attr('readonly', 'readonly');
+    $('.tbody_tb').append(row);
+    
+    $(row).find(".delete_form").click(function() {
+        return deleteFormset(this, prefix);
+    });
+    $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
+
+});
+
+$(document).on('click', '.delete_form', function() {
+    deleteFormset($(this), String($(this).attr('id')));
+});
+
+function deleteFormset(btn, prefix) {
+    var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    if (formCount > 1) {
+        $(btn).parents('.item').remove();
+        var forms = $('.item'); 
+        $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+        var i = 0;
+        for (formCount = forms.length; i < formCount; i++) {
+            $(forms.get(i)).find('.formset-field').each(function() {
+                $(forms.get(i)).find('.td_id').text(i + 1);
+                updateElementFormset(this, prefix, i);
+            });
+        }
+        get_total();
+    } 
+    return false;
+}
+
+
+getTotalItem=(element_id)=>{
+    let total_items = 0;
+    var x = element_id.id.split('-');
+    var qty_p=$('#id_PurchasesDetails-' + x[1] + '-qty').val();
+    var price_p=$('#id_PurchasesDetails-' + x[1] + '-price').val();
+    if(!isNaN(parseInt(qty_p))&& !isNaN(parseInt(price_p))){
+
+        total_items =(parseInt(qty_p)*parseInt(price_p));
+    }
+    $('#id_PurchasesDetails-' + x[1] + '-total').val(total_items);
+    get_total();
+}
+
+function get_total() {
+    let total_items = 0;
+    $('.total_items').each(function() {
+        if (!isNaN(parseFloat($(this).val()))) {
+            total_items += parseFloat($(this).val());
+        }
+    });
+
+    $('#id_amount').val(total_items);
+    
+}
+
+
+</script>
+<script>
+    function updateElementFormset(el, prefix, ndx) {
+        var id_regex = new RegExp('(' + prefix + '-\\d+-)');
+        var replacement = prefix + '-' + ndx + '-';
+        if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex,
+            replacement));
+        if (el.id) el.id = el.id.replace(id_regex, replacement);
+        if (el.name) el.name = el.name.replace(id_regex, replacement);
+}
+
+</script>
+
+{% endblock scripts %}

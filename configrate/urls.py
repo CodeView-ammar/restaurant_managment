@@ -12,5 +12,5 @@ path('UserDataJson', UserDataJson.as_view(), name='UserDataJson'),
 path('', include('configrate.Unit.urls')),
 path('', include('configrate.itemtype.urls')),
 path('', include('configrate.store.urls')),
-path('', include('configrate.Items.urls')),
+
 ]
