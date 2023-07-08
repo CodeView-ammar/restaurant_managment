@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import Purchases,PurchasesDetails
-admin.site.register(Purchases)
-admin.site.register(PurchasesDetails)
+from .models import PurchaseInvoicelocal,PurchaseInvoicelocalDetails
+admin.site.register(PurchaseInvoicelocal)
+admin.site.register(PurchaseInvoicelocalDetails)

@@ -24,11 +24,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users.apps.UserConfig',
+    'crispy_forms',
     'social_django',
     "configrate",
     "input",
     "purchases",
-    
 ]
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -120,6 +120,7 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     os.path.join('static'),
+    os.path.join('purchases\static'),
 
 ]
 

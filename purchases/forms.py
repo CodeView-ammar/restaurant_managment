@@ -1,101 +1,350 @@
+import datetime
 from django import forms
-from purchases.models import Purchases,PurchasesDetails,Supplier
+from django.db import models
+
+from django.utils.translation import ugettext_lazy as _
+from crispy_forms.helper import FormHelper
+from django.core.exceptions import ObjectDoesNotExist
+from crispy_forms.layout import Layout, Submit, Row, Column, Fieldset, ButtonHolder, Div
+from crispy_forms.bootstrap import InlineRadios, InlineField, FormActions
+
+from purchases.models import (PurchaseInvoicelocal,PurchaseInvoicelocalDetails,
+)
+from configrate.models import Unit,Store
+from input.models import Items
+
+from django.urls import reverse_lazy
 from datetime import timedelta
 from datetime import date
-from input.models import Store,Items
-class PurchasesForm(forms.ModelForm):
+from purchases.models import Supplier
+
+
+
+
+class PurchaseInvoiceForm(forms.ModelForm):
+    store = forms.ModelChoiceField(
+        queryset=Store.objects.all(),
+        label=_('المخزن'),
+    )
+
     def __init__(self, *args, **kwargs):
-        super(PurchasesForm, self).__init__(*args, **kwargs)
-        self.fields["number"] = forms.CharField(
-            required=True,
-            label='الرقم',
-            widget=forms.TextInput(
+        super(PurchaseInvoiceForm, self).__init__(*args, **kwargs)
+        
+        
+        
+        self.fields["supplir"] = forms.ModelChoiceField(
+            label=_("المورد"),
+            queryset=Supplier.objects.all(),
+            # widget=autocomplete.ModelSelect2(url="SupplirItemAutocomplete1",),
+        )
+
+        self.fields["discount_item"] = forms.FloatField(
+            label=_("إجمالي خصم الاصناف"),
+            required=False,
+            widget=forms.NumberInput(
                 attrs={
-                    "readonly": "readonly",
-                    "class": "form-field number number_id form-control",
+                    "class": "form-control",
+                    "readonly": True,
+                    "value":0,
+                    "placeholder": _("قيمة"),
                 }
             ),
         )
+      
+        self.fields["total_net_bill"] = forms.FloatField(
+            label=_("إجمالي بعد الخصم"),
+            required=False,
+            widget=forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "readonly": True,
+                    "placeholder": _("قيمة"),
+                }
+            ),
+        )
+
         self.fields["date"] = forms.DateField(
-            required=False,
-            initial=date.today(),
-            label="التاريخ",
+            label=_('تاريخ الفاتورة'),
             widget=forms.DateInput(
-                attrs={"type": "date","class":"form-control", "required": True}
+                # attrs={"type": "Date", "max": datetime.date.today(),}
+                attrs={"type": "Date",}
             ),
+            initial=datetime.date.today(),
         )
-         
-        self.fields["notes"] = forms.CharField(
-            required=False,
-            label='البيان',
-            widget=forms.Textarea(attrs={"rows": "2", "column": "1","class": "form-field form-control"}))
-
-        self.fields["amount"] = forms.DecimalField(
-            label="الإجمالي",
-            max_digits=12,
-            decimal_places=2,
-            widget=forms.NumberInput(attrs={"min": "0", "step": "1","readonly":"readonly","class":"form-control"}),
+        self.fields["supplier_bill_date"] = forms.DateField(
+            label=_("تاريخ فاتورة المورد"),
+            widget=forms.DateInput(
+                attrs={"class": "form-control","required":False, "type": "Date"})
         )
-        self.fields["supplir"] = forms.ModelChoiceField(
-            queryset=Supplier.objects.all(),
-            label='المورد',
-        )
+        # self.fields['branch'] = forms.ModelChoiceField(queryset=branches, required=True)
         self.fields["store"] = forms.ModelChoiceField(
-            queryset=Store.objects.all(),
-            label='المخزن',
+            label=_('المخزن'),
+            queryset=Store.objects.all(), required=False
         )
-       
-        self.fields["supplir"].widget.attrs.update({"class":"form-control"})
-        self.fields["store"].widget.attrs.update({"class":"form-control"})
+        self.fields["store"].widget.attrs.update(
+            {"class": " store select form-control"}
+            )
+        try:
 
+            try:
+                general_var = None
+            except ObjectDoesNotExist as e:
+                pass
 
+            self.fields["statement"].widget.attrs.update({"class": "form-control"})
+            self.fields["reference_number"].widget.attrs.update(
+                {"class": "form-control"}
+            )
+            self.fields["code"].widget.attrs.update({"class": "   form-control"})
+            self.fields["date"].widget.attrs.update({"class": "   form-control"})
+            self.fields["supplir"].widget.attrs.update({"class": "   form-control"})
+            self.fields["tax"].widget.attrs.update({"class": "   form-control"})
+            # self.fields["due_date"].widget.attrs.update({"class": "   form-control"})
+            self.fields["check_amount"].widget.attrs.update({"class": "   form-control"})
+            self.fields["supplier_bill_number"].widget.attrs.update({"class": "   form-control"})
+            self.fields["supplier_bill_date"].widget.attrs.update({"required":False})
+            self.fields["statement"].widget.attrs.update({"class": "   form-control"})
+            self.fields["reference_number"].widget.attrs.update({"class": "   form-control"})
+            self.fields["total_amount"].widget.attrs.update({"class": "   form-control"})
+            self.fields["discount"].widget.attrs.update({"class": "   form-control"})
+            self.fields["discount_rate"].widget.attrs.update({"class": "   form-control"})
+
+        except ObjectDoesNotExist as e:
+
+            raise e
 
     class Meta:
-        model=Purchases
-        
-        fields="__all__"
+        model = PurchaseInvoicelocal
+        fields = [
+            "code",
+            "date",
+            "supplir",
+            "tax",
+            "check_amount",
+            "supplier_bill_number",
+            "supplier_bill_date",
+            "amount",
+            "statement",
+            "reference_number",
+            "total_amount",
+            "discount",
+            "discount_rate",
+            'is_stage',
+        ]
+       
+        widgets = {
+            "statement": forms.Textarea(attrs={"rows": 1, "class": "form-control","required":False}),
+            "supplier_bill_number": forms.NumberInput(
+                attrs={"class": "form-control","required":False}
+                
+                ),
+            "store": forms.Select(),
+            "discount": forms.NumberInput(
+                attrs={"class": "form-control", "oninput": "getPercentag(this)"}
+            ),
+            "discount_rate": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "oninput": "getPercentag(this)",
+                    "min": "0",
+                    "max": "100",
+                }
+            ),
+            "code": forms.NumberInput(attrs={"readonly": True}),
+            "total_amount": forms.NumberInput(
+                attrs={"class": "form-control", "readonly": True}
+            ),
+            "tax": forms.NumberInput(attrs={"class": "form-control", "readonly": True}),
+        }
+        labels = {
+            "total_amount": _("المجموع"),
+            "code": _("رقم الفاتورة"),
+            "discount": _("تخفيض"),
+            "discount_rate": _("تخفيض %"),
+            "total_net_bill": _("إجمالي بعد الخصم"),
 
-class PurchasesDetailsForm(forms.ModelForm):
-    
-    total=forms.CharField(max_length=50,
-        label='store',
-    )
+            "tax": _("الضريبة"),
+        }
+
+
+class PurchaseInvoicelocalDetailsForm(forms.ModelForm):
+    """Form For Purchase Invoicelocal Details
+    """
     def __init__(self, *args, **kwargs):
-        try:
-            
-            row = next(kwargs.pop("row"))
-        except:
-            row = None
-        super(PurchasesDetailsForm, self).__init__(*args, **kwargs)
-
-        self.fields["purchases"]=forms.IntegerField(required=False)
-        self.fields["items"] = forms.ModelChoiceField(
+        super(PurchaseInvoicelocalDetailsForm, self).__init__(*args, **kwargs)
+        self.fields["item"] = forms.ModelChoiceField(
+            label="",
             queryset=Items.objects.all(),
-            label='الصنف',
+            # widget=autocomplete.ModelSelect2(url="ItemAutocomplete1",),
         )
-        
-
-        self.fields["items"].widget.attrs.update({"class":"form-control formset-field"})
-        self.fields["price"].widget.attrs.update({"class":"form-control formset-field "})
-        self.fields["qty"].widget.attrs.update({"class":"form-control formset-field"
-        ,"onchange": "getTotalItem(this)",
-        })
-        self.fields["total"].widget.attrs.update({"class":"form-control total_items formset-field","readonly":"readonly"})
-        self.fields["date_end"] = forms.DateField(
+ 
+        self.fields["total_price"] = forms.FloatField(
+            label="",
             required=False,
-            initial=date.today(),
-            label="تاريخ الإنتهاء",
-            widget=forms.DateInput(
-                attrs={"type": "date", "class":"formset-field", "required": True}
+            widget=forms.NumberInput(
+                attrs={
+                    "oninput": "getPrice(this)",
+                    "readonly": True,
+                    "class": "formset-field form-control sss",
+                    "style": "width: 150px !important",
+                }
             ),
         )
-        
+        self.fields["expire_date"] = forms.DateField(
+            label="",
+            required=False,
+            widget=forms.DateInput(
+                attrs={
+                    "type": "Date",
+                    "class": "formset-field form-control",
+                    "min": datetime.date.today(),
+                }
+            ),
+        )
+        try:
+            general_var = None
+
+        except ObjectDoesNotExist as e:
+            pass
+        try:
+            attrs = {}
+            self.fields["item"].widget.attrs.update(
+                {
+                    "class": "formset-field form-control",
+                    "style": "width: 150px !important",
+                    "onchange": "getItemunit(this)",
+                    "required": True,
+                }
+            )
+           
+            # show_statement_item_level
+            
+            self.fields["statement"].widget.attrs.update({"required": False})
+            del self.fields["statement"]
+
+          
+            self.fields["item_specification"].widget.attrs.update(
+                {"required": False}
+            )
+            del self.fields["item_specification"]
+
+            
+            ITEM_DISCOUNT_TYPE =""
+            if ITEM_DISCOUNT_TYPE == "Percentage":
+                self.fields["discount"].widget.attrs.update(
+                    {"required": False, "readonly": True}
+                )
+
+            elif ITEM_DISCOUNT_TYPE == "Amount":
+                self.fields["discount_rate"].widget.attrs.update({"readonly": True,"style": "width: 100px !important",})
+
+            else:
+                pass
+            self.fields["selling_price"].widget.attrs.update({"required": False})
+            del self.fields["selling_price"]
+        except:
+            pass
+
     class Meta:
-        model=PurchasesDetails
-        fields=[
-            "purchases",
-            "items",
-            "price",
+        model = PurchaseInvoicelocalDetails
+
+        fields = [
+            "item",
+            "unit",
             "qty",
-            "date_end",
+            "price",
+            "expire_date",
+            "statement",
+            "discount",
+            "discount_rate",
+            "store",
+            "selling_price",
         ]
+
+        widgets = {
+            "total_price": forms.NumberInput(
+                attrs={
+                    "class": "formset-field form-control sss",
+                    "style": "width: 100px !important",
+                }
+            ),
+            "qty": forms.NumberInput(
+                attrs={
+                    "class": "formset-field form-control sss",
+                    "step": 1,
+                    "oninput": "getTotal(this)",
+                    "style": "width: 100px !important",
+                }
+            ),
+            "price": forms.NumberInput(
+                attrs={
+                    "class": "formset-field form-control sss",
+                    "oninput": "getTotal(this)",
+                    "style": "width: 100px !important",
+                }
+            ),
+            "unit": forms.Select(
+                attrs={
+                    "class": "formset-field form-control sss",
+                    "style": "width: 100px !important",
+                }
+            ),
+            "store": forms.Select(
+                attrs={
+                    "class": " formset-field form-control sss",
+                    "style": "width: 100px !important",
+                }
+            ),
+    
+            "expire_date": forms.DateInput(
+                attrs={
+                    "class": "formset-field form-control sss",
+                    "type": "date",
+                    "onclick": "chake_date(this)",
+                    "style": "width: 100px !important",
+                }
+            ),
+            "statement": forms.TextInput(
+                attrs={
+                    "class": "formset-field form-control sss",
+                    "style": "width: 100px !important",
+                }
+            ),
+            "discount": forms.NumberInput(
+                attrs={
+                    "class": "sss formset-field form-control",
+                    "oninput": "getTotal(this)",
+                    "style": "width: 100px !important",
+                }
+            ),
+       
+            "discount_rate": forms.NumberInput(
+                attrs={
+                    "class": "sss formset-field form-control",
+                    "style": "width: 150px !important",
+                    "oninput": "getTotal(this)",
+                    "min": "0",
+                    "max": "100",
+                }
+            ),
+            "selling_price": forms.NumberInput(
+                attrs={
+                    "class": "sss formset-field form-control",
+                    "style": "width: 100px !important",
+                }
+            ),
+        }
+        labels = {
+            "total_price": "",
+            "item": "",
+            "unit": "",
+            "qty": "",
+            "price": "",
+            "expire_date": "",
+            "statement": "",
+            "discount": "",
+            "discount_rate": "",
+            "store": "",
+            "selling_price": "",
+            "item_specification": "",
+        }

@@ -1,10 +1,13 @@
-import os
-from django.urls import path, include
-from django.contrib.auth import views as auth_views #new
-from purchases.views import PurchaseInvoicelocals,max_number
+from django.urls import path,include
+from purchases import views
+from django.conf.urls import url
+
+
 urlpatterns = [
-path('', include('purchases.Supplier.urls')),
-path('purchases', PurchaseInvoicelocals.as_view(),name='purchases'),
-path('max_number', max_number,name='max_number'),
+     path('PurchaseListJson/', views.PurchaseListJson.as_view(),name="PurchaseListJson"),
+     path('', include('purchases.Supplier.urls')),
+     path('PurchaseInvoice', views.PurchaseInvoice.as_view(),name='PurchaseInvoice'),
+     path('get_code/', views.get_code, name='get_code'),
+
+
 ]
- 
