@@ -51,18 +51,17 @@ class PurchaseInvoice(CreateView):
         result = {"status": 0, "message": ""}
 
         if "id" in request.GET.keys():
-
             if request.GET.get("id"):
                 formdata = PurchaseInvoicelocal.objects.filter(
                     pk=int(request.GET.get("id"))
                 )
          
-                supplierdata1 = Supplier.objects.values("id", "arabic_name").get(
+                supplierdata1 = Supplier.objects.values("id", "name_lo").get(
                     pk=formdata[0].supplir_id
                 )
                 supplierdata = {
                     "id": supplierdata1["id"],
-                    "name": supplierdata1["arabic_name"],
+                    "name": supplierdata1["name_lo"],
                 }
 
                 formsetdata = PurchaseInvoicelocalDetails.objects.filter(
@@ -72,7 +71,7 @@ class PurchaseInvoice(CreateView):
                 listdata = []
 
                 for i in formsetdata:
-                    d = Item.objects.values("id", "name_ar", "name_en").get(
+                    d = Items.objects.values("id", "name_lo", "name_fk").get(
                         pk=i.item_id
                     )
                     listdata.append(d)
@@ -84,7 +83,7 @@ class PurchaseInvoice(CreateView):
                     "datasupplier": supplierdata,
                     "dataitem": listdata,
                     "data1": serializers.serialize("json", formdata),
-                    "data2": serializers.serialize("json", formsetdata),
+                    "data2": serializers.serialize("json", formsetdata,fields=("item","unit","qty","price","selling_price","expire_date","discount","store")),
                 }
 
                 # except:
@@ -160,24 +159,17 @@ class PurchaseInvoice(CreateView):
             prefix="PurchaseInvoicelocalDetails",
         )
 
-        result = {"status": 0, "message": ""}
-
-        if request.POST.get("id_invoice"):
-           
+        result = {"status": 0, "message": "aaaa"}
+        if request.POST.get("id_purchase_invo"):
+            
             try:
-                pk_ivoice = int(request.POST["id_invoice"])
+                id_purchase_invo = int(request.POST["id_purchase_invo"])
                 data_form = get_object_or_404(
-                    PurchaseInvoicelocal, pk=int(request.POST["id_invoice"])
+                    PurchaseInvoicelocal, pk=int(request.POST["id_purchase_invo"])
                 )
-                obj_edit = PurchaseInvoicelocal.objects.get(pk=pk_ivoice)
+                obj_edit = PurchaseInvoicelocal.objects.get(pk=id_purchase_invo)
 
-                Variable={
-                    "is_cost_center":is_cost_center,
-                    "is_note":is_note,
-                    'is_expire_date':is_expire_date,
-                    "years_date":db_years_name
-
-                }
+       
                 form = PurchaseInvoiceForm(request.POST, instance=data_form)
 
                 formset = DataFormset(
@@ -185,77 +177,54 @@ class PurchaseInvoice(CreateView):
                     queryset=PurchaseInvoicelocalDetails.objects.none(),
                     prefix="PurchaseInvoicelocalDetails",
                 )
-                if data_form.is_editable() == False:
-                    msg = _(
-                        "Error ! The invoice has been deported or movement in item and cannot be modified"
-                    )
-
-                    raise InvoiceExcept(msg)
-            except InvoiceExcept as e:
-                traceback.print_exc()
-                result["status"] = 3
-                result["message"] = {
-                    "message": str(e),
-                    "class": "alert alert-danger",
-                }
-                return JsonResponse(result)
+                
             except Exception as e:
                 traceback.print_exc()
 
-                msg = _("inexcpected error has been ocred")
+                msg = "error"
                 result = {"status": 3, "message": msg}
                 return JsonResponse(result)
+
 
 
         if form.is_valid() and formset.is_valid():
 
             try:
                
-                if request.POST.get("id_invoice"):
-                    obj_edit.before_edite(request)
                 obj = form.save(commit=False)
-                if request.POST.get("id_invoice"):
+                if request.POST.get("id_purchase_invo"):
                     obj.modified_by_id = request.user.id
+                    PurchaseInvoicelocalDetails.objects.filter(purchase_invoicelocal_id = obj.id).delete()
                 else:
                     obj.created_by_id = request.user.id
                 
-                if not request.POST.get("id_invoice"):
+                if not request.POST.get("id_purchase_invo"):
                     obj.code = get_maxcode()
                 obj.save()
                 if formset.is_valid():
                     details_obj = formset.save(commit=False)
-
+                    
+                   
                     for instance in details_obj:
 
                         instance.purchase_invoicelocal_id = obj.id
                         instance.save()
                 doc_id = 0
-                if request.POST.get("id_invoice"):
+                if request.POST.get("id_purchase_invo"):
                     msg = "تم التعديل بنجاح"
                     result = {"status": 1, "message": msg}
                 else:
                     msg = "تم الحفظ بنجاح"
                     result = {"status": 1, "message": msg}
-            except IntegrityError as e:
-
-                traceback.print_exc()
-
-                result["status"] = 3
-                result["message"] = {
-                    "message": str(e),
-                    "class": "alert alert-danger",
-                }
-                return JsonResponse(result)
             except ObjectDoesNotExist as e:
                 traceback.print_exc()
-
                 msg = str(e)
-                result = {"status": 3, "message": msg, "msg": _("error")}
+                result = {"status": 3, "message": msg, "msg": "error"}
 
             except Exception as e:
                 traceback.print_exc()
-                msg = _("inexcpacted error")
-                result = {"status": 3, "message": msg, "msg": _("error")}
+                msg = "inexcpacted error"
+                result = {"status": 3, "message": msg, "msg": "error"}
 
         else:
             if not formset.is_valid():
@@ -272,24 +241,22 @@ class PurchaseInvoice(CreateView):
                         break
                     row = row + 1
 
-            else:
-             
+            else:                
                 result = {"status": 0, "error": form.errors}
 
         return JsonResponse(result)
 
     def delete(self, request, *args, **kwargs):
         result = {"status": 0, "message": ""}
-
         pk = int(QueryDict(request.body).get("id"))
+        print(pk)
         if pk:
             try:
-                with transaction.atomic(using=request.session.get("db_name")):
-                    data = get_object_or_404(PurchaseInvoicelocal, pk=pk)
+                data = get_object_or_404(PurchaseInvoicelocal, pk=pk)
 
-                    data.delete()
-                    msg = "تم الحذف بنجاح"
-                    result = {"status": 1, "message": msg}
+                data.delete()
+                msg = "تم الحذف بنجاح"
+                result = {"status": 1, "message": msg}
             except InvoiceExcept as e:
                 result["status"] = 3
                 result["message"] = {

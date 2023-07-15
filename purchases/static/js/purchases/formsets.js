@@ -7,30 +7,18 @@ function update_elem_index(el, prefix, ndx) {
     if (el.name) el.name = el.name.replace(id_regex, replacement);
 }
 
-// start for item unit formset
-// var row_count = 0;
 function add_form(btn, prefix) {
     var row_count = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 
 
     if (row_count < 1000) {
         var row = $(".form-row-purshess:last").clone(false).get(0);
-        //       let tr = `<div id="div_id_${prefix}-${row_count}-item" class="form-group">
-
-
-        //             <div class="">
-        //                 <select name="${prefix}-${row_count}-item" class="formset-field clear-this modelselect2 form-control select2-hidden-accessible" style="width: 200px !important" onchange="getItemunit(this)"  id="id_${prefix}-${row_count}-item" data-autocomplete-light-language="en" data-autocomplete-light-url="/ItemAutocomplete1/" data-autocomplete-light-function="select2" data-select2-id="id_${prefix}-${row_count}-item" tabindex="-1" aria-hidden="true">
-        // <option value="" selected="" data-select2-id="3">---------</option>
-        // </select><span class="select2 select2-container select2-container--default select2-container--focus" dir="ltr" data-select2-id="4" style="width: 200px;"><span class="selection"><span class="select2-selection__rendered" id="select2-id_${prefix}-${row_count}-item-container" role="textbox" aria-readonly="true"><span class="select2-selection__placeholder"></span></span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
-        // </div></div>`;
-        // $(row).find('.td_item').html(tr);
-        $(".errorlist", row).remove();
+          $(".errorlist", row).remove();
         $(".text-danger", row).remove();
         $(row).children().removeClass("error");
         $(row).children().removeClass("text-danger");
         $(row).find('td:first').text(row_count + 1);
 
-        //$(row).removeAttr('id').hide().insertAfter(".form-row-purshess:last").slideDown(300);
         $(row).find('.formset-field').each(function() {
             update_elem_index(this, prefix, row_count)
             $(this).val(0);
@@ -40,7 +28,6 @@ function add_form(btn, prefix) {
             return delete_form(this, prefix);
         });
         $(row).insertAfter(".form-row-purshess:last").slideDown(300);
-        //$('#tblProducts').append(row);
 
         $("#id_" + prefix + "-discount").val(0);
         $(`#id_${prefix}-${row_count}-item`).prop('required', true);
@@ -55,7 +42,6 @@ function delete_form(btn, prefix) {
     var row_count = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 
     if (row_count > 1) {
-        // Delete the item/form
         var goto_id = $(btn).find('input').val();
         if (goto_id) {
             $.ajax({
@@ -80,7 +66,7 @@ function delete_form(btn, prefix) {
                 update_elem_index(this, prefix, i);
             });
         }
-    } // End if
+    } 
     return false;
 }
 

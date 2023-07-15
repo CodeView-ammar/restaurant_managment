@@ -59,7 +59,7 @@ color:red;
             <form method="post" id='myform_invoic' action="{{ url }}" class="needs-validation" accept-charset="utf-8">
 
                 {% csrf_token %}
-                <input type="text" id="id_invoice1" name="id_invoice" class="hidden">
+                <input type="text" id="id_purchase_invo1" name="id_purchase_invo" class="">
                 <div class="box-body">
                     <div class="panel">
                         <div class="panel-body">
@@ -323,8 +323,8 @@ color:red;
 
         </div>
     </div>
+    </div>
 </div>
-
 
 {% endblock %}
 {% block scripts %}
