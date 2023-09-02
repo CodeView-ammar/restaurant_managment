@@ -4,7 +4,7 @@ Docs & License: https://fullcalendar.io/
 (c) 2019 Adam Shaw
 */
 
-import { createFormatter, removeElement, cssToStr, isMultiDayRange, htmlEscape, compareByFieldSpecs, applyStyle, FgEventRenderer, buildSegCompareObj, FillRenderer, memoizeRendering, createDuration, wholeDivideDurations, findElements, PositionCache, startOfDay, asRoughMs, formatIsoTimeString, addDurations, htmlToElement, createElement, multiplyDuration, DateComponent, hasBgRendering, Splitter, diffDays, buildGotoAnchorHtml, getAllDayHtml, ScrollComponent, matchCellWidths, uncompensateScroll, compensateScroll, subtractInnerElHeight, View, memoize, intersectRanges, Slicer, DayHeader, DaySeries, DayTable, createPlugin } from '@fullcalendar/core';
+import { createFormatter, removeElement, cssToStr, isMultiDayRange, htmlEscape, compareByFieldSpecs, applyStyle, FgEventRenderer, buildSegCompareObj, FillRenderer, memoizeRendering, createDuration, wholeDivideDurations, findElements, PositionCache, startOfDay, asRoughMs, formatIsoTimeString, addDurations, htmlToElement, createElement, multiplyDuration, DateComponent, hasBgRendering, Splitter, diffDays, buildGotoAnchorHtml, getAllDayHtml, ScrollComponent, matchCellWidths, uncompenSalescroll, compenSalescroll, subtractInnerElHeight, View, memoize, intersectRanges, Slicer, DayHeader, DaySeries, DayTable, createPlugin } from '@fullcalendar/core';
 import { DayBgRow, DayGrid, SimpleDayGrid } from '@fullcalendar/daygrid';
 
 /*! *****************************************************************************
@@ -1115,7 +1115,7 @@ var TimeGridView = /** @class */ (function (_super) {
         // reset all dimensions back to the original state
         this.timeGrid.bottomRuleEl.style.display = 'none'; // will be shown later if this <hr> is necessary
         this.scroller.clear(); // sets height to 'auto' and clears overflow
-        noScrollRowEls.forEach(uncompensateScroll);
+        noScrollRowEls.forEach(uncompenSalescroll);
         // limit number of events in the all-day area
         if (this.dayGrid) {
             this.dayGrid.removeSegPopover(); // kill the "more" popover if displayed
@@ -1134,7 +1134,7 @@ var TimeGridView = /** @class */ (function (_super) {
             if (scrollbarWidths.left || scrollbarWidths.right) { // using scrollbars?
                 // make the all-day and header rows lines up
                 noScrollRowEls.forEach(function (rowEl) {
-                    compensateScroll(rowEl, scrollbarWidths);
+                    compenSalescroll(rowEl, scrollbarWidths);
                 });
                 // the scrollbar compensation might have changed text flow, which might affect height, so recalculate
                 // and reapply the desired height to the scroller.

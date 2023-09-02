@@ -1433,7 +1433,7 @@ Docs & License: https://fullcalendar.io/
             // reset all heights to be natural
             this.scroller.clear();
             if (headRowEl) {
-                core.uncompensateScroll(headRowEl);
+                core.uncompenSalescroll(headRowEl);
             }
             dayGrid.removeSegPopover(); // kill the "more" popover if displayed
             // is the event limit a constant level number?
@@ -1453,7 +1453,7 @@ Docs & License: https://fullcalendar.io/
                 scrollbarWidths = this.scroller.getScrollbarWidths();
                 if (scrollbarWidths.left || scrollbarWidths.right) { // using scrollbars?
                     if (headRowEl) {
-                        core.compensateScroll(headRowEl, scrollbarWidths);
+                        core.compenSalescroll(headRowEl, scrollbarWidths);
                     }
                     // doing the scrollbar compensation might have created text overflow which created more height. redo
                     scrollerHeight = this.computeScrollerHeight(viewHeight);

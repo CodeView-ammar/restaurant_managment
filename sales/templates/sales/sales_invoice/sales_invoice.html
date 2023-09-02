@@ -1,0 +1,341 @@
+{%  extends "base.html" %}
+
+{% load crispy_forms_tags i18n static  %}
+{% block title%}
+فاتورة مبيعات
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">عرض فواتير المبيعات</button>
+
+{% endblock title%}
+{% block content %}
+
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">فواتير المبيعات</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <table
+            style="width:100%" class="datatable_list display nowrap table AutoFill table-striped table-bordered dt-responsive nowrap dataTable no-footer dtr-inline collapsed">
+            <thead>
+                <tr>
+                    <th>#</th>
+
+                    <th>تاريخ</th>
+                    <th>اسم العميل</th>
+                    <th>إجمالي الفاتورة</th>
+                    <th>الحدث</th>
+                </tr>
+            </thead>
+            <tbody class="show_Operation">
+            </tbody>
+          </table>
+          
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        
+          </div>
+      
+      </div>
+    </div>
+</div>
+  
+<style>
+    .btn-danger{
+color:red;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="box-header ptbnull">
+             
+
+            <form method="post" id='myform_invoic' action="{{ url }}" class="needs-validation" accept-charset="utf-8">
+
+                {% csrf_token %}
+                <input type="text" id="id_purchase_invo1" name="id_sales_invo" class="">
+                <div class="box-body">
+                    <div class="panel">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ form.code|as_crispy_field }}
+
+                                 
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.date|as_crispy_field }}
+
+
+                                </div>
+                                <div class="col-md-3">
+                                    
+                                    {{ form.customer|as_crispy_field }}
+                                </div>
+                                <div class="col-md-3">
+                                    {% if form.store in form %}
+                                    {{ form.store|as_crispy_field }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                               
+                                <div class="col-md-3">
+                                </div>
+                                <div class="col-md-3">
+                                </div>
+                                
+                                <div class="col-md-3">
+
+
+                                </div>
+                                <div class="col-md-3">
+                                </div>
+                            </div>
+                          
+
+                            <div class="row">
+                              
+                                <div class="col-md-3">
+                                </div>
+
+                                <div class="col-md-3">
+
+                                
+                                </div>
+                                <div class="col-md-3">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <br>
+                        <br>
+                    <h1>تفاصيل الفاتورة</h1>
+                        <div id="load_div">
+                            {{ formset.management_form }}
+                            <div class="table-responsive mailbox-messages">
+                                <table class="table table-responsive  table-bordered table-hover">
+                                    <thead class="text-center">
+                                        {{ formset.form.management_form }}
+                                        {% for work in formset %}
+                                        {% if forloop.first %}
+
+                                        <th style="width: 120px !important;">#</th>
+                                        <th>صنف</th>
+                                        <th style="width: 100px !important;">وحدة</th>
+                                        <th>كمية</th>
+                                        <th>سعر</th>
+                                        <th>سعر البيع</th>
+                                        
+
+                                        <th>تاريخ الإنتهاء</th>
+                                        <th>تخفيض</th>
+                                        <th>الإجمالي</th>
+
+                                        <th style="width: 100px;">حدث</th>
+                                           {% endif %}
+                                    </thead>
+                                    <tbody class="add" id="tblProducts" style="background-color: white; ">
+                                        <tr class="form-row-purshess  text-center" id="after-this1">
+                                            <td style="width: 120px !important;" class="td_id">
+                                                {{ forloop.counter }}</td>
+                                            <td class="td_item">
+                                                {{ work.item|as_crispy_field }}
+                                            </td>
+                                            <td style="width: 100px !important;">
+                                                {{ work.unit|as_crispy_field }}
+                                            </td>
+                                            <td>
+                                                {{ work.qty|as_crispy_field }}
+                                            </td>
+                                         
+                                            <td>
+                                                {{ work.price|as_crispy_field }}
+                                            </td>
+                                            <td>
+                                                {{ work.selling_price|as_crispy_field }}
+                                            </td>
+                                            <td>
+
+                                                {{ work.expire_date|as_crispy_field }}
+                                            </td>
+                                            <td>
+                                                {{ work.discount|as_crispy_field }}
+                                            </td>
+                                           
+                                            <td>
+                                                {{ work.total_price|as_crispy_field }}
+                                            </td>
+                                            <td>
+                                                <button type="button" onclick="getAlltotal()"
+                                                    class="remove  btn btn-danger btn-sm " id="{{ formset.prefix }}"
+                                                    style="font-size: 10px; color: white;">
+                                                    <span class="fa fa-trash fa-lg"></span>
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                        {% if forloop.first %}
+                                        <tr>
+                                            {% for work1 in work %}
+                                            {% if forloop.last %}
+                                            <td colspan="{{ forloop.counter }} - 1">
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endif %}
+                                                {% endfor %}
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td
+                                                style="border-left: none!important; border-right: none !important; border-bottom: none!important;">
+                                                <button type="button" data-toggle="tooltip" title="Add Row"
+                                                    class="btn btn-sm btn-green add_row" id="{{ formset.prefix }}">
+                                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                                </button>
+                                            </td>
+                                            <td colspan='9'></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                    <div class="box-footer">
+                        <!--start  row 1-->
+                        <div class="row">
+
+                            <div class="col-md-3">
+
+                                {{ form.total_amount.label_tag }}
+                                {{ form.total_amount }}
+                                {% if form.total_amount.help_text %}
+                                {{ form.total_amount.errors }}
+                                <sup>{{ form.total_amount.help_text }}</sup>
+                                {% endif %}
+                            </div>
+                         
+                        </div>
+                        <div class="row">
+                          
+                            <div class="col-md-3">
+                                {{ form.discount.label_tag }}
+                                {% if form.discount.help_text %}
+                                <sup>{{ form.discount.help_text }}</sup>
+                                {% endif %}
+                                {{ form.discount.errors }}</span>
+                                {{ form.discount }}
+                            </div>
+                            <div class="col-md-3">
+
+                                {{ form.discount_rate.label_tag }}
+                                {% if form.discount_rate.help_text %}
+                                <sup>{{ form.discount_rate.help_text }}</sup>
+                                {% endif %}
+                                {{ form.discount_rate.errors }}</span>
+                                {{ form.discount_rate }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.reference_number.label_tag }}
+                                {% if form.reference_number.help_text %}
+                                <sup>{{ form.reference_number.help_text }}</sup>
+                                {% endif %}
+                                {{ form.reference_number.errors }}</span>
+                                {{ form.reference_number }}
+                            </div>
+                            <div class="col-md-3">
+
+                                {{ form.statement.label_tag }}
+                                {% if form.statement.help_text %}
+                                <sup>{{ form.statement.help_text }}</sup>
+                                {% endif %}
+                                {{ form.statement.errors }}</span>
+                                {{ form.statement }}
+                            </div>
+                        </div>
+                       
+                        <div class="row">
+                            <div class="col-md-3">
+                                {{ form.total_net_bill.label_tag }}
+                                {% if form.total_net_bill.help_text %}
+                                <sup>{{ form.total_net_bill.help_text }}</sup>
+                                {% endif %}
+                                {{ form.total_net_bill.errors }}</span>
+                                {{ form.total_net_bill }}
+                            </div>
+                            <div class="col-md-3">
+                                {{ form.discount_item.label_tag }}
+                                {% if form.discount_item.help_text %}
+                                <sup>{{ form.discount_item.help_text }}</sup>
+                                {% endif %}
+                                {{ form.discount_item.errors }}</span>
+                                {{ form.discount_item }}
+                            </div>
+                            <div class="col-md-3">
+
+                                {{ form.tax.label_tag }}
+                                {% if form.tax.help_text %}
+                                <sup>{{ form.tax.help_text }}</sup>
+                                {% endif %}
+                                {{ form.tax.errors }}</span>
+                                {{ form.tax }}
+
+                            </div>
+                        </div>
+
+                 
+                    </div>
+              
+    <button type="submit">حفظ</button>
+
+            </form>
+
+           
+
+        </div>
+    </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+
+
+
+<script>
+    let csrf = '{{ csrf_token }}';
+</script>
+
+<script src="{% static 'js/sales/sales_invoice.js'%}"></script>
+
+<script src="{% static 'js/sales/formsets.js' %}"></script>
+
+
+<script>
+    url = "{% url 'SalesListJson' %}";
+$(document).ready(function () {
+    var oTable = $('.datatable_list').dataTable({
+        // ...
+        "processing": true,
+        "serverSide": true,
+        "ajax": url
+    });
+    // ...
+});
+</script>
+
+{% endblock scripts %}
+

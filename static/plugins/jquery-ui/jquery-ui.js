@@ -3683,7 +3683,7 @@ var effectsEffectPuff = $.effects.define( "puff", "hide", function( options, don
 
 //>>label: Pulsate Effect
 //>>group: Effects
-//>>description: Pulsates an element n times by changing the opacity to zero and back.
+//>>description: PulSales an element n times by changing the opacity to zero and back.
 //>>docs: http://api.jqueryui.com/pulsate-effect/
 //>>demos: http://jqueryui.com/effect/
 

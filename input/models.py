@@ -1,14 +1,14 @@
 from django.db import models
 from configrate.models import Unit,Items_type,Store
-
+from parent.models import  BaseModel
     
-class Category(models.Model):
+class Category(BaseModel):
     name_lo =models.CharField("الاسم المحلي",max_length=50)
     name_fk  =models.CharField("الاسم الاجنبي",max_length=50)
     is_stop=models.BooleanField(default=True)
     def __str__(self):
         return self.name_lo
-class Items(models.Model):
+class Items(BaseModel):
     unit=models.ForeignKey(Unit,on_delete=models.CASCADE)
     items_type=models.ForeignKey(Items_type,on_delete=models.CASCADE)
     category=models.ForeignKey(Category,on_delete=models.CASCADE)
@@ -18,10 +18,11 @@ class Items(models.Model):
     def __str__(self):
         return self.name_lo
 
-class story_items(models.Model):
+class story_items(BaseModel):
     qty=models.IntegerField("الكمية")
     Items=models.ForeignKey(Items,on_delete=models.CASCADE)
-    stor=models.ForeignKey(Store,on_delete=models.CASCADE)
-    date_in=models.IntegerField("تاريخ الاضافة")
-
+    stor=models.ForeignKey(Store,on_delete=models.CASCADE,null=True,blank=True)
+    exp_date=models.DateField("تاريخ الإنتهاء ")
+    selling_price = models.FloatField("Selling price")
+    purch_price = models.FloatField("purchases price")
 

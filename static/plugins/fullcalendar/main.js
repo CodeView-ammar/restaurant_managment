@@ -755,7 +755,7 @@ Docs & License: https://fullcalendar.io/
     ----------------------------------------------------------------------------------------------------------------------*/
     // Given the scrollbar widths of some other container, create borders/margins on rowEls in order to match the left
     // and right space that was offset by the scrollbars. A 1-pixel border first, then margin beyond that.
-    function compensateScroll(rowEl, scrollbarWidths) {
+    function compenSalescroll(rowEl, scrollbarWidths) {
         if (scrollbarWidths.left) {
             applyStyle(rowEl, {
                 borderLeftWidth: 1,
@@ -769,8 +769,8 @@ Docs & License: https://fullcalendar.io/
             });
         }
     }
-    // Undoes compensateScroll and restores all borders/margins
-    function uncompensateScroll(rowEl) {
+    // Undoes compenSalescroll and restores all borders/margins
+    function uncompenSalescroll(rowEl) {
         applyStyle(rowEl, {
             marginLeft: '',
             marginRight: '',
@@ -8607,7 +8607,7 @@ Docs & License: https://fullcalendar.io/
     exports.compareByFieldSpec = compareByFieldSpec;
     exports.compareByFieldSpecs = compareByFieldSpecs;
     exports.compareNumbers = compareNumbers;
-    exports.compensateScroll = compensateScroll;
+    exports.compenSalescroll = compenSalescroll;
     exports.computeClippingRect = computeClippingRect;
     exports.computeEdges = computeEdges;
     exports.computeFallbackHeaderFormat = computeFallbackHeaderFormat;
@@ -8705,7 +8705,7 @@ Docs & License: https://fullcalendar.io/
     exports.startOfDay = startOfDay;
     exports.subtractInnerElHeight = subtractInnerElHeight;
     exports.translateRect = translateRect;
-    exports.uncompensateScroll = uncompensateScroll;
+    exports.uncompenSalescroll = uncompenSalescroll;
     exports.undistributeHeight = undistributeHeight;
     exports.unpromisify = unpromisify;
     exports.version = version;

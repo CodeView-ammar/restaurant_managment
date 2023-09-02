@@ -11,23 +11,16 @@ from django.conf import settings
 from django.db.models import F
 from configrate.models import Unit,Store
 from input.models import Items
-
+from parent.models import  BaseModel
 import traceback
-class Supplier(models.Model):
+class Supplier(BaseModel):
     name_lo = models.CharField("الاسم المحلي",max_length=50)
     name_fk = models.CharField("الاسم الاجنبي",max_length=50)
     phone   = models.CharField("رقم الجوال",max_length=50,blank=True,null=True)
     is_stop = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name_lo
 
-
-class BaseModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=False, auto_now=True)
-    modified_at = models.DateTimeField(auto_now=True, auto_now_add=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.PROTECT,related_name="%(class)s_createdby",null=True,blank=True)
-    modified_by = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.PROTECT,related_name="%(class)s_modifiedby",null=True,blank=True,)
 
 
 

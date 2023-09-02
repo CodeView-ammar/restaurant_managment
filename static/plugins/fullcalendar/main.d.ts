@@ -7,7 +7,7 @@ declare module '@fullcalendar/core' {
     export { OptionsInput } from '@fullcalendar/core/types/input-types';
     export { EventInput, EventDef, EventDefHash, EventInstance, EventInstanceHash, parseEventDef, createEventInstance, EventTuple } from '@fullcalendar/core/structs/event';
     export { BusinessHoursInput, parseBusinessHours } from '@fullcalendar/core/structs/business-hours';
-    export { applyAll, debounce, padStart, isInt, capitaliseFirstLetter, parseFieldSpecs, compareByFieldSpecs, compareByFieldSpec, flexibleCompare, computeVisibleDayRange, refineProps, matchCellWidths, uncompensateScroll, compensateScroll, subtractInnerElHeight, isMultiDayRange, distributeHeight, undistributeHeight, preventSelection, allowSelection, preventContextMenu, allowContextMenu, compareNumbers, enableCursor, disableCursor, diffDates } from '@fullcalendar/core/util/misc';
+    export { applyAll, debounce, padStart, isInt, capitaliseFirstLetter, parseFieldSpecs, compareByFieldSpecs, compareByFieldSpec, flexibleCompare, computeVisibleDayRange, refineProps, matchCellWidths, uncompenSalescroll, compenSalescroll, subtractInnerElHeight, isMultiDayRange, distributeHeight, undistributeHeight, preventSelection, allowSelection, preventContextMenu, allowContextMenu, compareNumbers, enableCursor, disableCursor, diffDates } from '@fullcalendar/core/util/misc';
     export { htmlEscape, cssToStr } from '@fullcalendar/core/util/html';
     export { removeExact, isArraysEqual } from '@fullcalendar/core/util/array';
     export { memoize, memoizeOutput } from '@fullcalendar/core/util/memoize';
@@ -527,8 +527,8 @@ declare module '@fullcalendar/core/util/misc' {
     import { Duration } from '@fullcalendar/core/datelib/duration';
     import { DateEnv } from '@fullcalendar/core/datelib/env';
     import { DateRange, OpenDateRange } from '@fullcalendar/core/datelib/date-range';
-    export function compensateScroll(rowEl: HTMLElement, scrollbarWidths: any): void;
-    export function uncompensateScroll(rowEl: HTMLElement): void;
+    export function compenSalescroll(rowEl: HTMLElement, scrollbarWidths: any): void;
+    export function uncompenSalescroll(rowEl: HTMLElement): void;
     export function disableCursor(): void;
     export function enableCursor(): void;
     export function distributeHeight(els: HTMLElement[], availableHeight: any, shouldRedistribute: any): void;

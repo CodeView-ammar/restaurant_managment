@@ -2,6 +2,11 @@
 
 This project is a restaurant management system developed through YouTube tutorials. You can visit the YouTube channel and subscribe to it for detailed explanations and demonstrations.
 https://www.youtube.com/channel/UC05xLrP1FWuGVuZ_jt_JyfQ
+# delete migrations -->
+find . -path "*/migrations/*.pyc"  -delete
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+
+
 ## Installation
 
 To run this project, you need to have Python installed. Create a virtual environment and install the required dependencies from the `requirements.txt` file.

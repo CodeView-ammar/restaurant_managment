@@ -1118,7 +1118,7 @@ Docs & License: https://fullcalendar.io/
             // reset all dimensions back to the original state
             this.timeGrid.bottomRuleEl.style.display = 'none'; // will be shown later if this <hr> is necessary
             this.scroller.clear(); // sets height to 'auto' and clears overflow
-            noScrollRowEls.forEach(core.uncompensateScroll);
+            noScrollRowEls.forEach(core.uncompenSalescroll);
             // limit number of events in the all-day area
             if (this.dayGrid) {
                 this.dayGrid.removeSegPopover(); // kill the "more" popover if displayed
@@ -1137,7 +1137,7 @@ Docs & License: https://fullcalendar.io/
                 if (scrollbarWidths.left || scrollbarWidths.right) { // using scrollbars?
                     // make the all-day and header rows lines up
                     noScrollRowEls.forEach(function (rowEl) {
-                        core.compensateScroll(rowEl, scrollbarWidths);
+                        core.compenSalescroll(rowEl, scrollbarWidths);
                     });
                     // the scrollbar compensation might have changed text flow, which might affect height, so recalculate
                     // and reapply the desired height to the scroller.

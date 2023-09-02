@@ -4,7 +4,7 @@ Docs & License: https://fullcalendar.io/
 (c) 2019 Adam Shaw
 */
 
-import { addWeeks, diffWeeks, DateProfileGenerator, createElement, listenBySelector, removeElement, computeRect, computeClippingRect, applyStyle, cssToStr, htmlEscape, FgEventRenderer, appendToElement, prependToElement, htmlToElement, FillRenderer, memoizeRendering, createFormatter, addDays, DateComponent, rangeContainsMarker, getDayClasses, findElements, PositionCache, buildGotoAnchorHtml, findChildren, insertAfterElement, intersectRanges, ScrollComponent, matchCellWidths, uncompensateScroll, compensateScroll, subtractInnerElHeight, distributeHeight, undistributeHeight, View, Slicer, memoize, DayHeader, DaySeries, DayTable, createPlugin } from '@fullcalendar/core';
+import { addWeeks, diffWeeks, DateProfileGenerator, createElement, listenBySelector, removeElement, computeRect, computeClippingRect, applyStyle, cssToStr, htmlEscape, FgEventRenderer, appendToElement, prependToElement, htmlToElement, FillRenderer, memoizeRendering, createFormatter, addDays, DateComponent, rangeContainsMarker, getDayClasses, findElements, PositionCache, buildGotoAnchorHtml, findChildren, insertAfterElement, intersectRanges, ScrollComponent, matchCellWidths, uncompenSalescroll, compenSalescroll, subtractInnerElHeight, distributeHeight, undistributeHeight, View, Slicer, memoize, DayHeader, DaySeries, DayTable, createPlugin } from '@fullcalendar/core';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -1429,7 +1429,7 @@ var DayGridView = /** @class */ (function (_super) {
         // reset all heights to be natural
         this.scroller.clear();
         if (headRowEl) {
-            uncompensateScroll(headRowEl);
+            uncompenSalescroll(headRowEl);
         }
         dayGrid.removeSegPopover(); // kill the "more" popover if displayed
         // is the event limit a constant level number?
@@ -1449,7 +1449,7 @@ var DayGridView = /** @class */ (function (_super) {
             scrollbarWidths = this.scroller.getScrollbarWidths();
             if (scrollbarWidths.left || scrollbarWidths.right) { // using scrollbars?
                 if (headRowEl) {
-                    compensateScroll(headRowEl, scrollbarWidths);
+                    compenSalescroll(headRowEl, scrollbarWidths);
                 }
                 // doing the scrollbar compensation might have created text overflow which created more height. redo
                 scrollerHeight = this.computeScrollerHeight(viewHeight);

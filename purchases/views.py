@@ -29,7 +29,7 @@ from django.db.models import Q, F
 from django.conf import settings
 from django.utils.html import format_html
 from configrate.models import Unit,Store
-from input.models import Items
+from input.models import Items,story_items
 
 
 
@@ -189,42 +189,58 @@ class PurchaseInvoice(CreateView):
 
         if form.is_valid() and formset.is_valid():
 
-            try:
+            # try:
                
-                obj = form.save(commit=False)
-                if request.POST.get("id_purchase_invo"):
-                    obj.modified_by_id = request.user.id
-                    PurchaseInvoicelocalDetails.objects.filter(purchase_invoicelocal_id = obj.id).delete()
-                else:
-                    obj.created_by_id = request.user.id
+            obj = form.save(commit=False)
+            if request.POST.get("id_purchase_invo"):
+                obj.modified_by_id = request.user.id
+                PurchaseInvoicelocalDetails.objects.filter(purchase_invoicelocal_id = obj.id).delete()
+            else:
+                obj.created_by_id = request.user.id
+            
+            if not request.POST.get("id_purchase_invo"):
+                obj.code = get_maxcode()
+            obj.save()
+            if formset.is_valid():
+                details_obj = formset.save(commit=False)
                 
-                if not request.POST.get("id_purchase_invo"):
-                    obj.code = get_maxcode()
-                obj.save()
-                if formset.is_valid():
-                    details_obj = formset.save(commit=False)
+                
+                for instance in details_obj:
+                    obj_itm=story_items.objects.filter(Items=instance.item,exp_date=instance.expire_date).values("qty")
+                    obj_itm_=[]
+                    if obj_itm:
+                        print("obj"*100)
+                        obj_itm_=list(obj_itm)
+                        obj_itm_=obj_itm_[0]['qty']
+                        story_=story_items.objects.filter(Items=instance.item,exp_date=instance.expire_date).update(qty=int(obj_itm_)+int(instance.qty))    
+                    else:
+                        story_items.objects.create(
+                        Items=instance.item,
+                        qty=instance.qty,
+                        exp_date=instance.expire_date,
+                        stor=instance.store,
+                        selling_price=instance.selling_price,
+                        purch_price=instance.price
+                        )
                     
-                   
-                    for instance in details_obj:
+                    instance.purchase_invoicelocal_id = obj.id
+                    instance.save()
+            doc_id = 0
+            if request.POST.get("id_purchase_invo"):
+                msg = "تم التعديل بنجاح"
+                result = {"status": 1, "message": msg}
+            else:
+                msg = "تم الحفظ بنجاح"
+                result = {"status": 1, "message": msg}
+            # except ObjectDoesNotExist as e:
+            #     traceback.print_exc()
+            #     msg = str(e)
+            #     result = {"status": 3, "message": msg, "msg": "error"}
 
-                        instance.purchase_invoicelocal_id = obj.id
-                        instance.save()
-                doc_id = 0
-                if request.POST.get("id_purchase_invo"):
-                    msg = "تم التعديل بنجاح"
-                    result = {"status": 1, "message": msg}
-                else:
-                    msg = "تم الحفظ بنجاح"
-                    result = {"status": 1, "message": msg}
-            except ObjectDoesNotExist as e:
-                traceback.print_exc()
-                msg = str(e)
-                result = {"status": 3, "message": msg, "msg": "error"}
-
-            except Exception as e:
-                traceback.print_exc()
-                msg = "inexcpacted error"
-                result = {"status": 3, "message": msg, "msg": "error"}
+            # except Exception as e:
+            #     traceback.print_exc()
+            #     msg = "inexcpacted error"
+            #     result = {"status": 3, "message": msg, "msg": "error"}
 
         else:
             if not formset.is_valid():
