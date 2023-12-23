@@ -102,8 +102,6 @@ class PurchaseInvoiceForm(forms.ModelForm):
             # self.fields["due_date"].widget.attrs.update({"class": "   form-control"})
             self.fields["check_amount"].widget.attrs.update({"class": "   form-control"})
             self.fields["supplier_bill_number"].widget.attrs.update({"class": "   form-control"})
-            self.fields["supplier_bill_date"].widget.attrs.update({"required":False})
-            self.fields["statement"].widget.attrs.update({"class": "   form-control"})
             self.fields["reference_number"].widget.attrs.update({"class": "   form-control"})
             self.fields["total_amount"].widget.attrs.update({"class": "   form-control"})
             self.fields["discount"].widget.attrs.update({"class": "   form-control"})
@@ -113,6 +111,8 @@ class PurchaseInvoiceForm(forms.ModelForm):
 
             raise e
 
+        self.fields["supplier_bill_date"].widget.attrs.update({"required":False})
+        self.fields["statement"].widget.attrs.update({"class": "   form-control","required":False})
     class Meta:
         model = PurchaseInvoicelocal
         fields = [
@@ -190,17 +190,17 @@ class PurchaseInvoicelocalDetailsForm(forms.ModelForm):
                 }
             ),
         )
-        self.fields["expire_date"] = forms.DateField(
-            label="",
-            required=False,
-            widget=forms.DateInput(
-                attrs={
-                    "type": "Date",
-                    "class": "formset-field form-control",
-                    "min": datetime.date.today(),
-                }
-            ),
-        )
+        # self.fields["expire_date"] = forms.DateField(
+        #     label="",
+        #     required=False,
+        #     widget=forms.DateInput(
+        #         attrs={
+        #             "type": "Date",
+        #             "class": "formset-field form-control",
+        #             "min": datetime.date.today(),
+        #         }
+        #     ),
+        # )
         try:
             general_var = None
 
@@ -253,7 +253,7 @@ class PurchaseInvoicelocalDetailsForm(forms.ModelForm):
             "unit",
             "qty",
             "price",
-            "expire_date",
+            # "expire_date",
             "statement",
             "discount",
             "discount_rate",
@@ -296,14 +296,14 @@ class PurchaseInvoicelocalDetailsForm(forms.ModelForm):
                 }
             ),
     
-            "expire_date": forms.DateInput(
-                attrs={
-                    "class": "formset-field form-control sss",
-                    "type": "date",
-                    "onclick": "chake_date(this)",
-                    "style": "width: 100px !important",
-                }
-            ),
+            # "expire_date": forms.DateInput(
+            #     attrs={
+            #         "class": "formset-field form-control sss",
+            #         "type": "date",
+            #         "onclick": "chake_date(this)",
+            #         "style": "width: 100px !important",
+            #     }
+            # ),
             "statement": forms.TextInput(
                 attrs={
                     "class": "formset-field form-control sss",
@@ -340,7 +340,7 @@ class PurchaseInvoicelocalDetailsForm(forms.ModelForm):
             "unit": "",
             "qty": "",
             "price": "",
-            "expire_date": "",
+            # "expire_date": "",
             "statement": "",
             "discount": "",
             "discount_rate": "",
