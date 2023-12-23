@@ -22,7 +22,7 @@ class story_items(BaseModel):
     qty=models.IntegerField("الكمية")
     Items=models.ForeignKey(Items,on_delete=models.CASCADE)
     stor=models.ForeignKey(Store,on_delete=models.CASCADE,null=True,blank=True)
-    exp_date=models.DateField("تاريخ الإنتهاء ")
+    # exp_date=models.CharField("تاريخ الإنتهاء ")
     selling_price = models.FloatField("Selling price")
     purch_price = models.FloatField("purchases price")
 
