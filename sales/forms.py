@@ -159,14 +159,22 @@ class SalesInvoiceForm(forms.ModelForm):
 class SalesInvoicelocalDetailsForm(forms.ModelForm):
     """Form For Sales Invoicelocal Details
     """
+    
+
     def __init__(self, *args, **kwargs):
         super(SalesInvoicelocalDetailsForm, self).__init__(*args, **kwargs)
         self.fields["item"] = forms.ModelChoiceField(
             label="",
             queryset=Items.objects.all(),
-            # widget=autocomplete.ModelSelect2(url="ItemAutocomplete1",),
+
         )
- 
+        self.fields["unit"].widget.attrs.update(
+                {
+                    "class": "formset-field form-control",
+                    "onchange":"get_store_items_data(this)",
+                }
+            )
+
         self.fields["total_price"] = forms.FloatField(
             label="",
             required=False,
@@ -179,29 +187,31 @@ class SalesInvoicelocalDetailsForm(forms.ModelForm):
                 }
             ),
         )
-        self.fields["expire_date"] = forms.DateField(
-            label="",
-            required=False,
-            widget=forms.DateInput(
-                attrs={
-                    "type": "Date",
-                    "class": "formset-field form-control",
-                    "min": datetime.date.today(),
-                }
-            ),
-        )
-        try:
-            general_var = None
+        # self.fields["expire_date"] = forms.ChoiceField(
+        #     label="",
+        #     required=True,
+        
+        # )
+        # self.fields["expire_date"].widget.attrs.update(
+        #         {
+        #             "class": "formset-field form-control",
+        #             "onchange":"get_store_items_data(this)",
+                    
+        #         }
+        #     )
 
-        except ObjectDoesNotExist as e:
-            pass
+        # try:
+        #     general_var = None
+
+        # except ObjectDoesNotExist as e:
+        #     pass
         try:
             attrs = {}
             self.fields["item"].widget.attrs.update(
                 {
                     "class": "formset-field form-control",
                     "style": "width: 150px !important",
-                    "onchange": "getItemunit(this)",
+                    "onchange": "get_Price_item(this)",
                     "required": True,
                 }
             )
@@ -234,6 +244,12 @@ class SalesInvoicelocalDetailsForm(forms.ModelForm):
         except:
             pass
 
+
+    qty_store = forms.IntegerField(
+        label="",
+        widget=forms.NumberInput(attrs={"class": "formset-field form-control","readonly": True,"style": "width: 100px !important"})
+    )
+
     class Meta:
         model = SalesInvoicelocalDetails
 
@@ -241,16 +257,22 @@ class SalesInvoicelocalDetailsForm(forms.ModelForm):
             "item",
             "unit",
             "qty",
-            "price",
-            "expire_date",
+            # "expire_date",
             "statement",
             "discount",
             "discount_rate",
             "store",
             "selling_price",
+            
         ]
 
         widgets = {
+            "qty_store":forms.NumberInput(
+                attrs={
+                    "class": "formset-field form-control sss",
+                    "style": "width: 100px !important",
+                }
+            ),
             "total_price": forms.NumberInput(
                 attrs={
                     "class": "formset-field form-control sss",
@@ -261,13 +283,6 @@ class SalesInvoicelocalDetailsForm(forms.ModelForm):
                 attrs={
                     "class": "formset-field form-control sss",
                     "step": 1,
-                    "oninput": "getTotal(this)",
-                    "style": "width: 100px !important",
-                }
-            ),
-            "price": forms.NumberInput(
-                attrs={
-                    "class": "formset-field form-control sss",
                     "oninput": "getTotal(this)",
                     "style": "width: 100px !important",
                 }
@@ -285,14 +300,14 @@ class SalesInvoicelocalDetailsForm(forms.ModelForm):
                 }
             ),
     
-            "expire_date": forms.DateInput(
-                attrs={
-                    "class": "formset-field form-control sss",
-                    "type": "date",
-                    "onclick": "chake_date(this)",
-                    "style": "width: 100px !important",
-                }
-            ),
+            # "expire_date": forms.DateInput(
+            #     attrs={
+            #         "class": "formset-field form-control sss",
+            #         "type": "date",
+            #         "onclick": "chake_date(this)",
+            #         "style": "width: 100px !important",
+            #     }
+            # ),
             "statement": forms.TextInput(
                 attrs={
                     "class": "formset-field form-control sss",
@@ -328,7 +343,6 @@ class SalesInvoicelocalDetailsForm(forms.ModelForm):
             "item": "",
             "unit": "",
             "qty": "",
-            "price": "",
             "expire_date": "",
             "statement": "",
             "discount": "",

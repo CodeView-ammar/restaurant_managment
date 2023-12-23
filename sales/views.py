@@ -83,7 +83,7 @@ class SalesInvoice(CreateView):
                     "datacustomer": customerdata,
                     "dataitem": listdata,
                     "data1": serializers.serialize("json", formdata),
-                    "data2": serializers.serialize("json", formsetdata,fields=("item","unit","qty","price","selling_price","expire_date","discount","store")),
+                    "data2": serializers.serialize("json", formsetdata,fields=("item","unit","qty","selling_price","expire_date","discount","store")),
                 }
 
                 # except:
@@ -202,11 +202,18 @@ class SalesInvoice(CreateView):
                 if formset.is_valid():
                     details_obj = formset.save(commit=False)
                     
-                   
+                    qty=0
                     for instance in details_obj:
-                        print("obj.id"*10)
-                        print(obj.id)
                         instance.Sales_invoicelocal_id = obj.id
+                        instance.store_id=request.POST.get("store")
+                        qoty = story_items.objects.filter(Items_id=instance.item, stor_id=instance.store).first()
+                        if qoty:
+                            qoty.qty = int(qoty.qty) - int(instance.qty)
+                            qoty.save()
+                        else:
+                            result = {"status": 3, "message": "الكمية غير متوفرة بالمخزن", "msg": "error"}
+                            return JsonResponse(result)
+
                         instance.save()
                 doc_id = 0
                 if request.POST.get("id_sales_invo"):
@@ -248,7 +255,6 @@ class SalesInvoice(CreateView):
     def delete(self, request, *args, **kwargs):
         result = {"status": 0, "message": ""}
         pk = int(QueryDict(request.body).get("id"))
-        print(pk)
         if pk:
             try:
                 data = get_object_or_404(SalesInvoicelocal, pk=pk)
@@ -277,6 +283,35 @@ def get_code(request):
     new_code = get_maxcode()
     data = {"status": 1, "data": new_code}
     return JsonResponse(data)
+from input.models import story_items
+from django.core import serializers
+
+
+def get_store_items(request):
+    id_item=request.GET.get("id_item")
+    id_store=request.GET.get("id_store")
+    if(id_item):
+        data_=story_items.objects.filter(stor_id=int(id_store),Items_id=int(id_item))
+        result = {"status": 1, "data": data_}
+    else:
+        result = {"status":0, "data": ""}
+    return JsonResponse(result)
+
+
+def get_store_items_data(request):
+    id_item=request.GET.get("id_item")
+    id_store=request.GET.get("id_store")
+    expire_date=request.GET.get("expire_date")
+    if(id_item):
+
+        data_=story_items.objects.filter(stor=id_store,Items=id_item)
+        result = {"status": 1, "data": serializers.serialize("json", data_)}
+    else:
+        result = {"status":0, "data": ""}
+    return JsonResponse(result)
+
+
+
 
 def get_maxcode():
     

@@ -117,23 +117,16 @@ class PurchaseInvoice(CreateView):
                     "url": reverse("PurchaseInvoice"),
                     "title_list": _("Purchase Invoice local"),
                     "dialog_form1": SupplierForm(),
-                    # "url_dialog_form1": reverse("SupplierView"),
-                    "dialog_form_title1": _("Add Supplier "),
-                    # "dialog_form2": StoreForm(),
-                    # "url_dialog_form2": reverse("StoreView"),
-                    "dialog_form_title2": _("Add Store "),
                 }
             except ObjectDoesNotExist as e:
 
-                data = _("Error must initial GeneralVariables in app supplier")
-
+               
                 result = {
                     "status": 0,
-                    "message": {"message": data, "class": "alert alert-danger"},
+                    "message": {"message": e.message, "class": "alert alert-danger"},
                 }
-                # return JsonResponse(result)
                 context = {
-                    "error": data,
+                    "error": result,
                 }
             return render(request, "purchases/purchases/purchase_invoicelocal.html", context)
 
@@ -206,19 +199,17 @@ class PurchaseInvoice(CreateView):
                 
                 
                 for instance in details_obj:
-                    obj_itm=story_items.objects.filter(Items=instance.item,exp_date=instance.expire_date).values("qty")
+                    obj_itm=story_items.objects.filter(Items=instance.item,stor=request.POST.get("store")).values("qty")
                     obj_itm_=[]
                     if obj_itm:
-                        print("obj"*100)
                         obj_itm_=list(obj_itm)
                         obj_itm_=obj_itm_[0]['qty']
-                        story_=story_items.objects.filter(Items=instance.item,exp_date=instance.expire_date).update(qty=int(obj_itm_)+int(instance.qty))    
+                        story_=story_items.objects.filter(Items=instance.item,stor=request.POST.get("store")).update(qty=int(obj_itm_)+int(instance.qty))    
                     else:
                         story_items.objects.create(
                         Items=instance.item,
                         qty=instance.qty,
-                        exp_date=instance.expire_date,
-                        stor=instance.store,
+                        stor=request.POST.get("store"),
                         selling_price=instance.selling_price,
                         purch_price=instance.price
                         )

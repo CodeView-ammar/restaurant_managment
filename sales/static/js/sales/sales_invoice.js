@@ -3,7 +3,7 @@ $(document).ready(function() {
     $('body.skin-blue.sidebar-mini').toggleClass('sidebar-collapse');
 
         $.ajax({
-            url: "/get_code/",
+            url: "/get_code_SalesInvoice/",
             data: { },
             method: 'get',
             success: function(data) {
@@ -213,8 +213,91 @@ function getItemunit(id) {
     }
 }
 
+function get_Price_item(element_id) {
+    let index = element_id.name.split('-');
+    
+    let id_item=parseInt($(`#id_SalesInvoicelocalDetails-${index[1]}-item`).val())
+    let id_store='';
+    if($("#id_store").val()=='') 
+    {
+        alert("يجب عليك إختيار المخزن");
+        return;
+    }else{
+        id_store=$(`#id_store`).val()
+    }
+    $.ajax({
+        url: '/get_store_items/',
+        data:{
+            "id_item":id_item,
+            "id_store": id_store},
+        success: function(data) {
+            let form_data = JSON.parse(data.data)
+            let counter_;
 
- 
+
+            // $('select[id$="-expire_date"]').each(function() {
+            //     $(this).children("option").remove();
+            // });
+            // $(`#id_SalesInvoicelocalDetails-${index[1]}-expire_date`).append(`<option value="">----------</option>`);
+           
+            for(counter_=0;form_data.length;counter_++){
+                
+            // $.each(form_data[counter_].fields, function(i, value) {
+            //     if(i=="exp_date")
+            //     $(`#id_SalesInvoicelocalDetails-${index[1]}-expire_date`).append(`<option value="${value}">${value}</option>`);
+                    
+            //     });
+        }    
+            
+            // $(`#id_SalesInvoicelocalDetails-${index[1]}-qty`).val(json['qty'])
+
+
+
+        },
+        error: function(jqXHR){
+
+        }
+    })
+
+}
+
+
+function get_store_items_data(element_id) {
+    let index = element_id.name.split('-');
+    
+    let id_item=parseInt($(`#id_SalesInvoicelocalDetails-${index[1]}-item`).val())
+    let id_store='';
+    if($("#id_store").val()=='') 
+    {
+        alert("يجب عليك إختيار المخزن");
+        return;
+    }else{
+        id_store=document.getElementById(`id_store`).value
+    }
+
+    $.ajax({
+        url: '/get_store_items_data/',
+        data:{
+            "id_item":id_item,
+            "id_store": id_store,
+        },
+        success: function(data) {
+            let form_data = JSON.parse(data.data)[0].fields
+
+            $(`#id_SalesInvoicelocalDetails-${index[1]}-qty_store`).val(form_data['qty'])
+            $(`#id_SalesInvoicelocalDetails-${index[1]}-selling_price`).val(form_data['selling_price'])
+           
+
+
+        },
+        error: function(jqXHR){
+
+        }
+    })
+
+}
+
+
 function getTotal(element_id) {
     let index = element_id.name.split('-');
     let qty = 0;
@@ -230,8 +313,8 @@ function getTotal(element_id) {
     if (!isNaN(parseInt(document.getElementById(`id_SalesInvoicelocalDetails-${index[1]}-qty`).value))) {
         qty = parseInt(document.getElementById(`id_SalesInvoicelocalDetails-${index[1]}-qty`).value);
     }
-    if (!isNaN(parseFloat(document.getElementById(`id_SalesInvoicelocalDetails-${index[1]}-price`).value))) {
-        price = parseFloat(document.getElementById(`id_SalesInvoicelocalDetails-${index[1]}-price`).value);
+    if (!isNaN(parseFloat(document.getElementById(`id_SalesInvoicelocalDetails-${index[1]}-selling_price`).value))) {
+        price = parseFloat(document.getElementById(`id_SalesInvoicelocalDetails-${index[1]}-selling_price`).value);
     }
     if (!isNaN(parseFloat(document.getElementById(`id_SalesInvoicelocalDetails-${index[1]}-discount`).value))) {
         discount = parseFloat(document.getElementById(`id_SalesInvoicelocalDetails-${index[1]}-discount`).value);
@@ -320,7 +403,7 @@ function getPrice(element_id) {
     if (!isNaN(parseFloat(document.getElementById(`id_SalesInvoicelocalDetails-${index[1]}-total_price`).value))) {
         total = parseFloat(document.getElementById(`id_SalesInvoicelocalDetails-${index[1]}-total_price`).value);
     }
-    $(`#id_SalesInvoicelocalDetails-${index[1]}-price`).val(total / qty);
+    $(`#id_SalesInvoicelocalDetails-${index[1]}-selling_price`).val(total / qty);
     $(`#id_SalesInvoicelocalDetails-${index[1]}-discount`).val(0);
     getAlltotal();
     getAllDiscountItem();

@@ -61,8 +61,7 @@ class SalesOperationDetails(BaseModel):
     unit = models.ForeignKey(Unit, on_delete=models.PROTECT)
     qty = models.PositiveIntegerField(verbose_name="qty")
     free_qty = models.PositiveIntegerField(verbose_name="free qty", default=0)
-    price = models.DecimalField(verbose_name="price", max_digits=8, decimal_places=2)
-    expire_date = models.DateField(verbose_name="expire date", null=True, blank=True)
+    # expire_date = models.CharField(verbose_name="expire date",max_length=50)
     statement = models.CharField(
         verbose_name="Statement", max_length=100, null=True, blank=True
     )

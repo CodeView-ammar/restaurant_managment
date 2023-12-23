@@ -1,7 +1,6 @@
 $(document).ready(function() {
     $('.nav.navbar.navbar-static-top').toggleClass('margin-50');
     $('body.skin-blue.sidebar-mini').toggleClass('sidebar-collapse');
-
         $.ajax({
             url: "/get_code/",
             data: { },

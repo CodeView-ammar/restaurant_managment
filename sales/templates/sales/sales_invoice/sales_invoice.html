@@ -59,7 +59,7 @@ color:red;
             <form method="post" id='myform_invoic' action="{{ url }}" class="needs-validation" accept-charset="utf-8">
 
                 {% csrf_token %}
-                <input type="text" id="id_purchase_invo1" name="id_sales_invo" class="">
+                <input type="text" id="id_purchase_invo1" name="id_sales_invo" class="head">
                 <div class="box-body">
                     <div class="panel">
                         <div class="panel-body">
@@ -132,11 +132,12 @@ color:red;
                                         <th>صنف</th>
                                         <th style="width: 100px !important;">وحدة</th>
                                         <th>كمية</th>
+                                        
+                                        
                                         <th>سعر</th>
-                                        <th>سعر البيع</th>
+                                        <th>كمية المتوفرة</th>
                                         
 
-                                        <th>تاريخ الإنتهاء</th>
                                         <th>تخفيض</th>
                                         <th>الإجمالي</th>
 
@@ -153,20 +154,16 @@ color:red;
                                             <td style="width: 100px !important;">
                                                 {{ work.unit|as_crispy_field }}
                                             </td>
+                                          
                                             <td>
                                                 {{ work.qty|as_crispy_field }}
-                                            </td>
-                                         
-                                            <td>
-                                                {{ work.price|as_crispy_field }}
                                             </td>
                                             <td>
                                                 {{ work.selling_price|as_crispy_field }}
                                             </td>
                                             <td>
-
-                                                {{ work.expire_date|as_crispy_field }}
-                                            </td>
+                                                {{ work.qty_store|as_crispy_field }}
+                                                </td>
                                             <td>
                                                 {{ work.discount|as_crispy_field }}
                                             </td>
