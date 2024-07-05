@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "purchases",
     "sales",
     "parent",
+    "pos",
 ]
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

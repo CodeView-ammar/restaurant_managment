@@ -18,6 +18,7 @@ urlpatterns = [
     path('', include('input.urls')),
     path('', include('purchases.urls')),
     path('', include('sales.urls')),
+    path('', include('pos.urls')),
     
     path('', include('users.urls')),
     path('login/', CustomLoginView.as_view(redirect_authenticated_user=True, template_name='users/login.html',
