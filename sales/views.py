@@ -55,9 +55,8 @@ class SalesInvoice(CreateView):
                 formdata = SalesInvoicelocal.objects.filter(
                     pk=int(request.GET.get("id"))
                 )
-         
                 customerdata1 = Customer.objects.values("id", "name_lo").get(
-                    pk=formdata[0].supplir_id
+                    pk=formdata.values("customer")[0]['customer']
                 )
                 customerdata = {
                     "id": customerdata1["id"],
@@ -65,7 +64,7 @@ class SalesInvoice(CreateView):
                 }
 
                 formsetdata = SalesInvoicelocalDetails.objects.filter(
-                    sales_invoicelocal_id=int(request.GET.get("id"))
+                    Sales_invoicelocal_id=int(request.GET.get("id"))
                 )
 
                 listdata = []

@@ -124,9 +124,9 @@ $(document).ready(function() {
                 let invoice_rows = parseInt($('#id_' + 'SalesInvoicelocalDetails' + '-TOTAL_FORMS').val());
                 $(`input[name="id_purchase_invo"]`).val(form_data[0].pk);
                 if (data.status === 1) {
-                    let supplierdata = data.datasupplier;
-                    let supplier_optoin = `<option selected value="${supplierdata.id}">${supplierdata.name}</option>`;
-                    $(`select[name="supplir"] option[value="${supplierdata.id}"]`).attr('selected', 'selected');
+                    let customerdata = data.datacustomer;
+                    let customer_optoin = `<option selected value="${customerdata.id}">${customerdata.name}</option>`;
+                    $(`select[name="supplir"] option[value="${customerdata.id}"]`).attr('selected', 'selected');
 
                     if (form_data.length !== 0) {
                         $.each(form_data[0].fields, function(i, value) {
