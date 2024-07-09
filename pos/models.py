@@ -10,14 +10,19 @@ class Setting(BaseModel):
 
 class Device(BaseModel):
     name = models.CharField(max_length=100)
-
+    def __str__(self):
+        return self.name+""
 
 
 class Session(BaseModel):
-    Device= models.ForeignKey(Device, on_delete=models.CASCADE)
-    start_date = models.DateTimeField(auto_now_add=True)
+    STATUS_CHOICES={
+        ("open","open"),
+        ("closed","closed"),
+    }
+    device= models.ForeignKey(Device, on_delete=models.CASCADE)
+    start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
-
+    status = models.CharField(max_length=10,choices=STATUS_CHOICES,default="open",null=True, blank=True)
 
 
 
