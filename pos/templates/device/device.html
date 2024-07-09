@@ -1,0 +1,178 @@
+{%  extends "base.html" %}
+
+{% load static %} 
+{% block title %}
+شاشة الاجهزة الطرفية
+{% endblock title %}
+
+
+{% block content %}
+
+
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg">
+    جديد
+</button>
+
+
+<table id="example" class="display datatable" style="width:100%">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>الاشم المحلي</th>
+            <th>الاحداث</th>          
+        </tr>
+    </thead>
+ 
+</table>
+
+<div class="modal fade" id="modal-lg" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">إضافة جهاز</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <form method="POST" id ="id_form" action="{%url 'device'%}">
+          <input type="text" name="id" class="hidden" style="display: contents;">
+          {% csrf_token %}
+          {% if form.errors %}
+              <div class="alert alert-danger alert-dismissible" role="alert">
+                  <div id="form_errors">
+                      {% for key, value in form.errors.items %}
+                          <strong>{{ value }}</strong>
+                      {% endfor %}
+                  </div>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+          {% endif %}
+          <div class="form-row">
+              <div class="col-md-6">
+                  <div class="form-group">
+                      <label class="small mb-1">الاسم المحلي </label>
+                      
+                      
+                      
+                      {{ filed.name }}
+                  </div>
+              </div>
+          </div>
+        
+             
+          <div class="form-group mt-4 mb-0">
+              <button type="submit" class="col-md-12 btn btn-dark">حفظ</button><br><br>
+          </div>
+      </form>
+  
+        </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+let csrf = '{{ csrf_token }}';
+ $("#id_form").on("submit",function(e){
+  e.preventDefault();
+      
+      $.ajax({
+        method: "post",
+        data: $(this).serialize(),
+        url:$(this).attr('action'),
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("X-CSRFToken", csrf);
+          },
+        success: function(data) {
+          
+          if(data.status=="1")
+          {
+            alert(data.message);
+            $('.datatable').DataTable().ajax.reload();
+            $('#modal-lg').modal('hide');
+           }
+            else{
+            alert(data.message);
+            }
+        }
+      })
+ 
+    }) 
+   
+$(document).on('click','.edit_row',function(){
+ 
+ $.ajax({
+       url: $(this).data('url'),
+       data: {'id':$(this).data('id')},
+       type: 'GET',
+       success: function (data) {
+           let resp=JSON.parse(data.data);
+           if(data.status==1){
+               
+           $(`input[name="id"]`).val(resp[0].pk);
+           $.each(resp[0].fields,function(i,value){
+               $(`input[name="${i}"]`).val(value);
+               $(`select[name="${i}"] option[value="${value}"]`).attr('selected','selected');
+           });
+         $('#modal-lg').modal('show');
+
+       }
+      else{
+       console.log(data.error);
+      }
+  },
+  error:function(data){
+  }
+});
+});
+
+$(document).on('click','.delete_row',function(){
+
+if(confirm('هل حقا تريد الحذف؟')){
+ let id_row=$(this).data('id');
+ $.ajax({
+     url: $(this).data('url'),
+     data: {
+      'id':id_row,
+  },
+  method: 'DELETE',
+  beforeSend: function (xhr) {
+          xhr.setRequestHeader("X-CSRFToken",csrf);
+      },
+  success: function (data) {
+     
+      if(data.status==1){
+       alert(data.message)   
+    
+       $('.datatable').DataTable().ajax.reload();
+       
+     }
+     if(data.status==0)
+       alert(data.message)   
+
+   
+  },
+  error:function(data){
+  }
+});
+}
+});
+
+  $(document).ready(function () {
+    var oTable = $('.datatable').dataTable({
+        // ...
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{% url 'deviceJson' %}"
+    });
+    // ...
+});
+
+</script>
+
+{% endblock scripts %}

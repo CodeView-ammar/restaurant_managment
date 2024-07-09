@@ -140,6 +140,39 @@
                    </ul>
                 </li>
              
+             
+                   <!--input form -->
+                   <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                      <i class="nav-icon fas fa-copy"></i>
+                      <p>
+                      نقطة المبيعات
+                        <i class="fas fa-angle-left right"></i>
+                      </p>
+                    </a>
+             
+                    <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="{%url 'device'%}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>الاجهزة</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{%url 'session'%}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>الجلسات</p>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="{% url 'pos' %}" class="nav-link">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>نقطة البيع</p>
+                      </a>
+                    </li>
+                   </ul>
+                </li>
+             
               </ul>
             </nav>
             <!-- /.sidebar-menu -->
