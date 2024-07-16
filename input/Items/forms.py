@@ -16,7 +16,12 @@ class ItemsForm(forms.ModelForm):
             'class': 'formset-field  form-control'})
         self.fields['name_fk'].widget.attrs.update({
             'class': 'formset-field  form-control'})
-
+        self.fields['image'].widget.attrs.update({
+            'class': 'formset-field  form-control'})
+        self.fields['salse_price'].widget.attrs.update({
+            'class': 'formset-field  form-control'})
+        self.fields['purch_price'].widget.attrs.update({
+            'class': 'formset-field  form-control'})
 
 
 

@@ -15,6 +15,10 @@ class Items(BaseModel):
     barcode=models.CharField("باركود",max_length=50)
     name_lo=models.CharField("اسم الصنف المحلي",max_length=50,unique=True)
     name_fk=models.CharField("اسم الصنف الاجنبي",max_length=50,default="")
+    image = models.ImageField("صورة المنتج",upload_to="item",default="default.jpg")
+    purch_price= models.CharField("Purchased Price",max_length=100)
+    salse_price= models.CharField("Salse Price",max_length=100)
+    
     def __str__(self):
         return self.name_lo
 

@@ -50,7 +50,7 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-              <form method="POST" role="form" id ="id_form" action="{%url 'Items'%}">
+              <form action="{%url 'Items'%}"   id="id_form" method="post" class="needs-validation" accept-charset="utf-8" >
                 <input type="text" name="id" class="hidden" style="display: contents;">
                 {% csrf_token %}
 
@@ -114,6 +114,24 @@
                               {{ filed.barcode}}
                             </div>
                           </div>
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                              <label>سعر الشراء</label>
+                              {{ filed.purch_price}}
+                            </div>
+                          </div>
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                              <label>سعر البيع</label>
+                              {{ filed.salse_price}}
+                            </div>
+                          </div>
+                          <div class="col-sm-6">
+                            <div class="form-group">
+                              <label>صورة المنتج</label>
+                              {{ filed.image}}
+                            </div>
+                          </div>
                         </div>
                         <!-- input states -->
                         <div class="form-group ">
@@ -134,11 +152,18 @@
 let csrf = '{{ csrf_token }}';
  $("#id_form").on("submit",function(e){
   e.preventDefault();
-      
+    var form_upload = $("#id_form")[0];
+    var form_data = new FormData(form_upload);
       $.ajax({
         method: "post",
-        data: $(this).serialize(),
+        data: form_data ,
         url:$(this).attr('action'),
+        type: 'post',
+        dataType: 'json',
+        cache: false,
+        processData: false,
+        contentType: false,
+        
         beforeSend: function (xhr) {
             xhr.setRequestHeader("X-CSRFToken", csrf);
           },
@@ -170,13 +195,16 @@ $(document).on('click','.edit_row',function(){
           success: function (data) {
               let resp=JSON.parse(data.data);
               if(data.status==1){
-                  
-              $(`input[name="id"]`).val(resp[0].pk);
-              $.each(resp[0].fields,function(i,value){
-                  $(`input[name="${i}"]`).val(value);
-                  $(`select[name="${i}"] option[value="${value}"]`).attr('selected','selected');
-              });
-            $('#modal-lg').modal('show');
+                  console.log(resp[0].fields)
+                  $(`input[name="id"]`).val(resp[0].pk);
+                  $('#modal-lg').modal('show');
+                  $.each(resp[0].fields,function(i,value_){
+                  if(i!="image")
+                  {
+                    $(`input[name="${i}"]`).val(value_);
+                    $(`select[name="${i}"] option[value="${value_}"]`).attr('selected','selected');
+                  }
+            });
 
           }
          else{

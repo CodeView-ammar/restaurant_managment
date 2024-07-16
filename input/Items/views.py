@@ -40,13 +40,14 @@ class Items_item(CreateView):
         return render(request, 'input/Items/Items.html',context)
 
     def post(self, request, *args, **kwargs):
-        form = ItemsForm(request.POST)
+        form = ItemsForm(request.POST,request.FILES)
         if request.POST.get('id'):
             data=get_object_or_404(Items,pk=int(request.POST.get('id')))
-            form=ItemsForm(request.POST,instance=data)
+            form=ItemsForm(request.POST,request.FILES,instance=data)
         item=[]
         if form.is_valid():
-            item = form.save()
+            item = form.save(commit=False)
+            item.image=request.FILES.get('image')
             item.save() # save in table 
             if request.POST.get('id'):
                 if item.id:
